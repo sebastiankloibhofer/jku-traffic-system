@@ -1,8 +1,15 @@
 package trafficsystem.controlsystem.scheduling;
 
-import trafficsystem.controlsystem.model.GraphPart;
+import trafficsystem.controlsystem.model.Path;
+import trafficsystem.controlsystem.trafficparticipants.street.GraphPart;
 
-public class RoutePlanner implements Runnable {
+import java.util.concurrent.Callable;
+
+public class RoutePlanner implements Callable<Path> {
+
+    // TODO approximate better / check in testing
+    /** Default timeout for this kind of task. */
+    public static final long TIMEOUT = 60000;
 
     private final GraphPart src;
     private final GraphPart dst;
@@ -13,7 +20,8 @@ public class RoutePlanner implements Runnable {
     }
 
     @Override
-    public void run() {
-        // TODO
+    public Path call() throws Exception {
+        // TODO calculate path from current traffic situation
+        return null;
     }
 }

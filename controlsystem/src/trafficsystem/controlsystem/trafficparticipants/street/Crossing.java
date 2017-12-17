@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class Crossing {
+public class Crossing implements GraphPart {
 
     /** The position of the crossing in eucledian spcace. */
     private final Vec2i position;

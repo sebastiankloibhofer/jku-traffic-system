@@ -1,10 +1,11 @@
 package trafficsystem.controlsystem;
 
-import trafficsystem.controlsystem.model.Edge;
-import trafficsystem.controlsystem.model.GraphPart;
+import trafficsystem.controlsystem.model.Path;
+import trafficsystem.controlsystem.trafficparticipants.street.GraphPart;
 
-import java.util.List;
-
+/**
+ * Interface that is exposed for subsystems that require routing information (e.g. maintenance).
+ */
 public interface RoutingControl {
-    List<Edge> getRoute(GraphPart src, GraphPart... dst);
+    Path getRoute(GraphPart first, GraphPart then, GraphPart... next);
 }

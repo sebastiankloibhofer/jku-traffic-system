@@ -1,10 +1,10 @@
 package trafficsystem.controlsystem.trafficparticipants.street;
 
-import trafficsystem.controlsystem.trafficparticipants.participant.TrafficParticipant;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
-import java.util.*;
-
-public class Lane {
+public class Lane implements GraphPart {
 
     /** The start and end node of the lane. */
     private final Crossing start, end;
@@ -15,21 +15,24 @@ public class Lane {
      */
     private final List<Lane> twins, inverseTwins;
 
-    /**
-     * The traffic participants currently following the lane.
-     */
-    private final PriorityQueue<TrafficParticipant> trafficParticipants;
+    /** The current number of participants on this lane. */
+    private long participants;
 
     /** The minimal and maximal speed allowed in the lane. */
     private int minSpeed, maxSpeed;
 
-    public Lane(Crossing start, Crossing end) {
+    /**
+     * Total length of the lane in metres.
+     */
+    private final int length;
+
+    public Lane(Crossing start, Crossing end, int length) {
         this.start = start;
         this.end = end;
         this.twins = new ArrayList<>();
         this.inverseTwins = new ArrayList<>();
+        this.length = length;
         this.connect();
-        this.trafficParticipants = new PriorityQueue<>();
     }
 
     /**
@@ -65,8 +68,12 @@ public class Lane {
         return inverseTwins;
     }
 
-    public Queue<TrafficParticipant> getTrafficParticipants() {
-        return trafficParticipants;
+    public long getParticipants() {
+        return participants;
+    }
+
+    public void setParticipants(long participants) {
+        this.participants = participants;
     }
 
     public int getMinSpeed() {
@@ -85,6 +92,10 @@ public class Lane {
         this.maxSpeed = maxSpeed;
     }
 
+    public int getLength() {
+        return length;
+    }
+
     /**
      * Gives an estimated value about the degree of capacity utilization.
      *
@@ -92,6 +103,8 @@ public class Lane {
      */
     public int getCapacity() {
         //TODO: implement heuristic for pathfinding
+        // TODO use car length + lane length
+        // TODO use current number of traffic participants
         return 0;
     }
 
