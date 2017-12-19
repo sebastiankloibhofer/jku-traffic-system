@@ -7,43 +7,61 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class Crossing implements controlsystem.trafficparticipants.street.GraphPart {
+public class Crossing implements GraphPart {
 
-    /** The position of the crossing in eucledian spcace. */
+    /**
+     * Approximation of the coordinate system to the real world.
+     */
+    public static final double METRES_PER_COORDINATE = 1d;
+
+    /**
+     * Average vehicle length in the real world.
+     */
+    public static final double AVG_CAR_LENGTH = 5d;
+
+    private final long id;
+
+    /** The position of the crossing in eucledian space. */
     private final Vec2i position;
 
     /** The outgoing and incoming lanes. */
-    private final List<controlsystem.trafficparticipants.street.Lane> out, in;
+    private final List<Lane> out, in;
 
-    public Crossing(int x, int y) {
-        this(new Vec2i(x, y));
+    public Crossing(long id, int x, int y) {
+        this(id, new Vec2i(x, y));
     }
 
-    public Crossing(Vec2i position) {
+    public Crossing(long id, Vec2i position) {
+        this.id = id;
         this.position = position;
         this.out = new ArrayList<>();
         this.in = new ArrayList<>();
+    }
+
+    @Override
+    public long getId() {
+        return id;
     }
 
     public Vec2i getPosition() {
         return position;
     }
 
-    public List<controlsystem.trafficparticipants.street.Lane> getOut() {
+    public List<Lane> getOut() {
         return out;
     }
 
-    public List<controlsystem.trafficparticipants.street.Lane> getIn() {
+    public List<Lane> getIn() {
         return in;
     }
 
-    public List<controlsystem.trafficparticipants.street.Lane> getOut(Crossing end) {
+    public List<Lane> getOut(Crossing end) {
         return out.stream().
                 filter(l -> l.getEnd().equals(end)).
                 collect(Collectors.toList());
     }
 
-    public List<controlsystem.trafficparticipants.street.Lane> getIn(Crossing start) {
+    public List<Lane> getIn(Crossing start) {
         return in.stream().
                 filter(l -> l.getStart().equals(start)).
                 collect(Collectors.toList());

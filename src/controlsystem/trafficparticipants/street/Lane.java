@@ -1,19 +1,22 @@
 package controlsystem.trafficparticipants.street;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
+
+import static controlsystem.trafficparticipants.street.Crossing.AVG_CAR_LENGTH;
+import static controlsystem.trafficparticipants.street.Crossing.METRES_PER_COORDINATE;
 
 public class Lane implements GraphPart {
 
+    /**
+     * Usage level that indicates a congestion.
+     * Note: just a simple approximation
+     */
+    public static final double CONGESTION_LVL = 0.8d;
+
+    private final long id;
+
     /** The start and end node of the lane. */
     private final Crossing start, end;
-
-    /**
-     * The lanes following the same direction and(start -> end)
-     * the ones going into the opposite direction(end -> start).
-     */
-    private final List<Lane> twins, inverseTwins;
 
     /** The current number of participants on this lane. */
     private long participants;
@@ -24,15 +27,32 @@ public class Lane implements GraphPart {
     /**
      * Total length of the lane in metres.
      */
-    private final int length;
+    private final double length;
 
-    public Lane(Crossing start, Crossing end, int length) {
+    public Lane(long id, Crossing start, Crossing end, double length) {
+        this.id = id;
         this.start = start;
         this.end = end;
-        this.twins = new ArrayList<>();
-        this.inverseTwins = new ArrayList<>();
         this.length = length;
         this.connect();
+    }
+
+    public Lane(long id, Crossing start, Crossing end) {
+        this(id, start, end, laneLength(start, end));
+    }
+
+    private static double laneLength(Crossing start, Crossing end) {
+        int startX = start.getPosition().x;
+        int startY = start.getPosition().y;
+        int endX = end.getPosition().x;
+        int endY = end.getPosition().y;
+
+        int diffX = Math.abs(endX - startX);
+        int diffY = Math.abs(endY - startY);
+
+        // approximate the total lane length
+        // given the begin and end coordinates
+        return Math.sqrt(Math.pow(diffX, 2) + Math.pow(diffY, 2));
     }
 
     /**
@@ -40,16 +60,12 @@ public class Lane implements GraphPart {
      * as well as to all its twins and inverse twins.
      */
     private void connect() {
-        twins.addAll(start.getOut(end));
-        inverseTwins.addAll(start.getIn(end));
         start.getOut().add(this);
         end.getIn().add(this);
-        for(Lane twin : twins) {
-            twin.getTwins().add(this);
-        }
-        for(Lane inverseTwin : inverseTwins) {
-            inverseTwin.getInverseTwins().add(this);
-        }
+    }
+
+    public long getId() {
+        return id;
     }
 
     public Crossing getStart() {
@@ -58,14 +74,6 @@ public class Lane implements GraphPart {
 
     public Crossing getEnd() {
         return end;
-    }
-
-    public List<Lane> getTwins() {
-        return twins;
-    }
-
-    public List<Lane> getInverseTwins() {
-        return inverseTwins;
     }
 
     public long getParticipants() {
@@ -92,20 +100,19 @@ public class Lane implements GraphPart {
         this.maxSpeed = maxSpeed;
     }
 
-    public int getLength() {
+    public double getLength() {
         return length;
     }
 
     /**
      * Gives an estimated value about the degree of capacity utilization.
+     * Note: This is a simply heuristic based on the lane length
+     * and the amount of traffic participants currently traversing it.
      *
-     * @return
+     * @return a percentage of the lane that is already occupied
      */
-    public int getCapacity() {
-        //TODO: implement heuristic for pathfinding
-        // TODO use car length + lane length
-        // TODO use current number of traffic participants
-        return 0;
+    public double getUsageLevel() {
+        return participants * AVG_CAR_LENGTH / (length * METRES_PER_COORDINATE);
     }
 
     @Override
