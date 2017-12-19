@@ -1,19 +1,19 @@
-package trafficsystem.controlsystem.trafficparticipants.street;
+package controlsystem.trafficparticipants.street;
 
-import trafficsystem.controlsystem.trafficparticipants.util.Vec2i;
+import controlsystem.trafficparticipants.util.Vec2i;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class Crossing implements GraphPart {
+public class Crossing implements controlsystem.trafficparticipants.street.GraphPart {
 
     /** The position of the crossing in eucledian spcace. */
     private final Vec2i position;
 
     /** The outgoing and incoming lanes. */
-    private final List<Lane> out, in;
+    private final List<controlsystem.trafficparticipants.street.Lane> out, in;
 
     public Crossing(int x, int y) {
         this(new Vec2i(x, y));
@@ -29,21 +29,21 @@ public class Crossing implements GraphPart {
         return position;
     }
 
-    public List<Lane> getOut() {
+    public List<controlsystem.trafficparticipants.street.Lane> getOut() {
         return out;
     }
 
-    public List<Lane> getIn() {
+    public List<controlsystem.trafficparticipants.street.Lane> getIn() {
         return in;
     }
 
-    public List<Lane> getOut(Crossing end) {
+    public List<controlsystem.trafficparticipants.street.Lane> getOut(Crossing end) {
         return out.stream().
                 filter(l -> l.getEnd().equals(end)).
                 collect(Collectors.toList());
     }
 
-    public List<Lane> getIn(Crossing start) {
+    public List<controlsystem.trafficparticipants.street.Lane> getIn(Crossing start) {
         return in.stream().
                 filter(l -> l.getStart().equals(start)).
                 collect(Collectors.toList());

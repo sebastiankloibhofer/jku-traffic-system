@@ -1,7 +1,7 @@
-package trafficsystem.controlsystem;
+package controlsystem;
 
-import trafficsystem.controlsystem.model.Path;
-import trafficsystem.controlsystem.trafficparticipants.street.GraphPart;
+import controlsystem.model.Path;
+import controlsystem.trafficparticipants.street.GraphPart;
 
 /**
  * Interface that is exposed for subsystems that require routing information (e.g. maintenance).

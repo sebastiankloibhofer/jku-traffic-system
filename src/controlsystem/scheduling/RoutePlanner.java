@@ -1,7 +1,7 @@
-package trafficsystem.controlsystem.scheduling;
+package controlsystem.scheduling;
 
-import trafficsystem.controlsystem.model.Path;
-import trafficsystem.controlsystem.trafficparticipants.street.GraphPart;
+import controlsystem.model.Path;
+import controlsystem.trafficparticipants.street.GraphPart;
 
 import java.util.concurrent.Callable;
 

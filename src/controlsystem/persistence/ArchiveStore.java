@@ -1,8 +1,8 @@
-package trafficsystem.controlsystem.persistence;
+package controlsystem.persistence;
 
-import trafficsystem.controlsystem.model.Path;
-import trafficsystem.controlsystem.trafficparticipants.street.GraphPart;
-import trafficsystem.controlsystem.trafficparticipants.street.Lane;
+import controlsystem.model.Path;
+import controlsystem.trafficparticipants.street.GraphPart;
+import controlsystem.trafficparticipants.street.Lane;
 
 import java.time.Instant;
 import java.util.List;

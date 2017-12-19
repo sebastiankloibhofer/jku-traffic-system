@@ -1,4 +1,4 @@
-package trafficsystem.controlsystem.util;
+package controlsystem.util;
 
 /**
  * Utility class for tuples.

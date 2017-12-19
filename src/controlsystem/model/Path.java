@@ -1,7 +1,7 @@
-package trafficsystem.controlsystem.model;
+package controlsystem.model;
 
-import trafficsystem.controlsystem.trafficparticipants.street.Crossing;
-import trafficsystem.controlsystem.trafficparticipants.street.Lane;
+import controlsystem.trafficparticipants.street.Crossing;
+import controlsystem.trafficparticipants.street.Lane;
 
 import java.util.*;
 import java.util.stream.Collectors;

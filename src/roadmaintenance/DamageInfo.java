@@ -1,3 +1,5 @@
+package roadmaintenance;
+
 public class DamageInfo {
 
     public final int damageReport_id;

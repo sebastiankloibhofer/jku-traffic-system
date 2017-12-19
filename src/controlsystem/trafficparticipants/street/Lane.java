@@ -1,4 +1,4 @@
-package trafficsystem.controlsystem.trafficparticipants.street;
+package controlsystem.trafficparticipants.street;
 
 import java.util.ArrayList;
 import java.util.List;

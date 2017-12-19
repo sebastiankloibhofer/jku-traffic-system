@@ -1,6 +1,6 @@
-package trafficsystem.controlsystem;
+package controlsystem;
 
-import trafficsystem.controlsystem.trafficparticipants.street.Lane;
+import controlsystem.trafficparticipants.street.Lane;
 
 /**
  * Interface that is exposed to information gathering subsystems (e.g. Traffic Control and Detection).

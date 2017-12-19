@@ -1,4 +1,4 @@
-package trafficsystem.controlsystem.trafficparticipants.util;
+package controlsystem.trafficparticipants.util;
 
 /**
  *

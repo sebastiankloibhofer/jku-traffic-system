@@ -1,12 +1,12 @@
-package trafficsystem.controlsystem;
+package controlsystem;
 
-import trafficsystem.controlsystem.model.Path;
-import trafficsystem.controlsystem.persistence.ArchiveStore;
-import trafficsystem.controlsystem.scheduling.RoutePlanner;
-import trafficsystem.controlsystem.trafficparticipants.street.Crossing;
-import trafficsystem.controlsystem.trafficparticipants.street.GraphPart;
-import trafficsystem.controlsystem.trafficparticipants.street.Lane;
-import trafficsystem.controlsystem.util.Tuple.T2;
+import controlsystem.model.Path;
+import controlsystem.persistence.ArchiveStore;
+import controlsystem.scheduling.RoutePlanner;
+import controlsystem.trafficparticipants.street.Crossing;
+import controlsystem.trafficparticipants.street.GraphPart;
+import controlsystem.trafficparticipants.street.Lane;
+import controlsystem.util.Tuple.T2;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -14,7 +14,7 @@ import java.util.Set;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
-import static trafficsystem.controlsystem.util.Tuple.t2;
+import static controlsystem.util.Tuple.t2;
 
 public class Controller implements RoutingControl, ControlSystem {
     /** Thread pool for concurrently working scheduler instances. */
