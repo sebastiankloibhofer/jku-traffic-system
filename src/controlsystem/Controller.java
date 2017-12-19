@@ -14,11 +14,18 @@ import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
 import static controlsystem.util.Tuple.t2;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 public class Controller implements RoutingControl, ControlSystem {
 
+    public static final long INIT_DELAY       = 10000;
+    public static final long CONGESTION_DELAY = 30000;
+
     /** Thread pool for concurrently working scheduler instances. */
-    private final ExecutorService schedulers = Executors.newFixedThreadPool(10);
+    private final ExecutorService exec = Executors.newFixedThreadPool(10);
+
+    /** Thread pool for periodically running congestion detection. */
+    private final ScheduledExecutorService schedExec = Executors.newSingleThreadScheduledExecutor();
 
     public final Map<Long, Crossing> crossing;
     public final Map<Long, Lane> lanes;
@@ -28,6 +35,18 @@ public class Controller implements RoutingControl, ControlSystem {
         this.crossing = crossing;
         this.lanes = lanes;
         this.rep = rep;
+
+        schedExec.scheduleWithFixedDelay(() ->
+                        lanes.values().forEach(l -> {
+                            double lvl = l.getUsageLevel();
+
+                            if (lvl >= Lane.CONGESTION_LVL)
+                                System.out.println("Detected congestion at lane " + l);
+                        }),
+                INIT_DELAY,
+                CONGESTION_DELAY,
+                MILLISECONDS
+        );
     }
 
     @Override
@@ -52,13 +71,13 @@ public class Controller implements RoutingControl, ControlSystem {
         }
 
         List<Future<Route>> pathPromise = subRoutes.stream()
-                .map(p -> schedulers.submit(new RoutePlanner(p._0, p._1)))
+                .map(p -> exec.submit(new RoutePlanner(p._0, p._1)))
                 .collect(Collectors.toList());
 
         List<Route> routes = pathPromise.stream()
                 .map(p -> {
                     try {
-                        return p.get(RoutePlanner.TIMEOUT, TimeUnit.MILLISECONDS);
+                        return p.get(RoutePlanner.TIMEOUT, MILLISECONDS);
                     } catch (InterruptedException | ExecutionException | TimeoutException e) {
                         // TODO
                         e.printStackTrace();
