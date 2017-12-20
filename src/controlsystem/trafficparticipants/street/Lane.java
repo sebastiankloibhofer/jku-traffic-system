@@ -3,9 +3,13 @@ package controlsystem.trafficparticipants.street;
 import java.util.Objects;
 
 import static controlsystem.trafficparticipants.street.Crossing.AVG_CAR_LENGTH;
-import static controlsystem.trafficparticipants.street.Crossing.METRES_PER_COORDINATE;
 
 public class Lane implements GraphPart {
+
+    /**
+     * Approximation of the coordinate system to the real world.
+     */
+    public static final double METRES_PER_COORDINATE = 1d;
 
     /**
      * Usage level that indicates a congestion.
@@ -13,6 +17,7 @@ public class Lane implements GraphPart {
      */
     public static final double CONGESTION_LVL = 0.8d;
 
+    /** Unique identifier for this lane. */
     private final long id;
 
     /** The start and end node of the lane. */
@@ -20,6 +25,9 @@ public class Lane implements GraphPart {
 
     /** The current number of participants on this lane. */
     private long participants;
+
+    /** Indicates whether this lane is blocked. */
+    private boolean blocked;
 
     /** The minimal and maximal speed allowed in the lane. */
     private int minSpeed, maxSpeed;
@@ -52,7 +60,7 @@ public class Lane implements GraphPart {
 
         // approximate the total lane length
         // given the begin and end coordinates
-        return Math.sqrt(Math.pow(diffX, 2) + Math.pow(diffY, 2));
+        return Math.sqrt(Math.pow(diffX, 2) + Math.pow(diffY, 2)) * METRES_PER_COORDINATE;
     }
 
     /**
@@ -112,7 +120,7 @@ public class Lane implements GraphPart {
      * @return a percentage of the lane that is already occupied
      */
     public double getUsageLevel() {
-        return participants * AVG_CAR_LENGTH / (length * METRES_PER_COORDINATE);
+        return participants * AVG_CAR_LENGTH / length;
     }
 
     @Override
@@ -147,5 +155,13 @@ public class Lane implements GraphPart {
     @Override
     public String toString() {
         return "Lane{" + "start=" + start + ", end=" + end + '}';
+    }
+
+    public boolean isBlocked() {
+        return blocked;
+    }
+
+    public void setBlocked(boolean blocked) {
+        this.blocked = blocked;
     }
 }
