@@ -1,12 +1,13 @@
 package roadmaintenance;
 
-import trafficparticipants.street.Lane;
+import controlsystem.model.Route;
+import trafficParticipants.street.Lane;
 
 public class RoadMaintenance {
 
     // Author: Nimrod Varga
     // Matr.Nr.: 01555232
-    //e-mail: nimrodvarga@hotmail.com
+    // e-mail: nimrodvarga@hotmail.com
 
     public static RoadMaintenance roadMaintenance;
 
@@ -24,7 +25,16 @@ public class RoadMaintenance {
 
     public int[] getRoute(int currentLocation_id, int destination_id){
         //TODO interface with control system here
-        return null;
+
+        Route r = getRoute(currentLocation_id, destination_id);
+
+        int[] route_ids = new int[r.lanes.size()];
+
+        int i=0;
+        for(Lane l:r.lanes)
+            route_ids[i++]=l.getId();
+
+        return route_ids;
     }
 
     public Lane getLane(int id){

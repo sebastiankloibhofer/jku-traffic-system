@@ -1,12 +1,13 @@
 package roadmaintenance;
 
-import trafficparticipants.participant.TPAction;
-import trafficparticipants.participant.TrafficParticipant;
-import trafficparticipants.street.Lane;
+import trafficParticipants.participant.TPAction;
+import trafficParticipants.participant.TrafficParticipant;
+import trafficParticipants.street.Lane;
+import trafficParticipants.util.Updateable;
 
 import static roadmaintenance.RoadMaintenance.roadMaintenance;
 
-public class MaintenanceCar implements TrafficParticipant {
+public class MaintenanceCar implements TrafficParticipant, Updateable {
 
     private int[] route;
     private int currentLane_index;
@@ -95,8 +96,6 @@ public class MaintenanceCar implements TrafficParticipant {
 
     public TPAction getAction(){
         if(route[currentLane_index] == destination){
-            repair();
-
             return TPAction.STAY;
         }
 
@@ -124,5 +123,10 @@ public class MaintenanceCar implements TrafficParticipant {
 
     public int currentLane(){
         return route[currentLane_index];
+    }
+
+    @Override
+    public void update() {
+        repair();
     }
 }

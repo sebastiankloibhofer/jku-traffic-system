@@ -1,5 +1,7 @@
 package roadmaintenance;
 
+import trafficParticipants.participant.TrafficParticipant;
+
 import java.util.PriorityQueue;
 
 import static roadmaintenance.RoadMaintenance.roadMaintenance;
@@ -22,13 +24,20 @@ public class Scheduler {
 
     public Scheduler(int availableMaintenanceCars){
         maintenanceTasks = new MaintenanceTask[availableMaintenanceCars];
-        for(int i =0; i<maintenanceTasks.length; i++)
+
+        TrafficParticipant[] cars = new TrafficParticipant[availableMaintenanceCars];
+        for(int i =0; i<maintenanceTasks.length; i++) {
             maintenanceTasks[i] = new MaintenanceTask();
+            maintenanceTasks[i].car.updateTarget(new int[]{roadMaintenance.headquarters.getId()}, null,i);
+            cars[i] = maintenanceTasks[i].car;
+        }
+
+        roadMaintenance.headquarters.getTrafficParticipants().addAll(cars);
     }
 
     private void issueMaintenanceSession(MaintenanceTask mt, DamageInfo dmgInfo, int dest_id, DamageType type, int taskId){
         mt.dmgInfo = dmgInfo;
-        mt.car.updateTarget(roadMaintenance.getRoute(mt.car.currentLane().id, dest_id), type, taskId);
+        mt.car.updateTarget(roadMaintenance.getRoute(mt.car.currentLane(), dest_id), type, taskId);
     }
 
     public void reschedule(DamageInfo dmgInfo){
@@ -47,7 +56,7 @@ public class Scheduler {
 
     public void reportFinishedTask(int taskId){
         if(toBeMaintained.isEmpty()){
-            issueMaintenanceSession(maintenanceTasks[taskId], null, roadMaintenance.headquarters.id, null, taskId);
+            issueMaintenanceSession(maintenanceTasks[taskId], null, roadMaintenance.headquarters.getId(), null, taskId);
         }
         else {
             DamageInfo dmgInfo = toBeMaintained.poll();
