@@ -1,9 +1,9 @@
-package participant;
+package trafficParticipants.participant;
 
-import street.Lane;
+import trafficParticipants.street.Lane;
 
 public interface TrafficParticipant {
     public int getSpeed();
-    public TPAction getAction();
+    public participant.TPAction getAction();
     public Lane getNextLane();
 }

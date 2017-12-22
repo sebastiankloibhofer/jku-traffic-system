@@ -5,7 +5,7 @@ package controlsystem;
  * (e.g. Traffic Control and Detection).
  */
 public interface ControlSystem {
-    void updateParticipantCount(long laneId, int count);
-    void reportDamage(long laneId, int severity);
-    void reportAccident(long laneId);
+    void updateParticipantCount(int laneId, int count);
+    void reportDamage(int laneId, int severity);
+    void reportAccident(int laneId);
 }

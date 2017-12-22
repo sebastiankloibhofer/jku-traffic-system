@@ -1,7 +1,8 @@
-package participant;
+package trafficParticipants.participant;
+
+import trafficParticipants.street.Lane;
 
 import java.util.EnumSet;
-import street.Lane;
 
 /**
  *
@@ -16,29 +17,30 @@ public class Vehicle implements TrafficParticipant {
         this.speed = speed;
         this.inactiveTypes = inactiveTypes;
     }
-    
+
     @Override
-    public TPAction getAction() {
+    public participant.TPAction getAction() {
         if(getNextLane() == null) {
-            return TPAction.FIN;
+            return participant.TPAction.FIN;
         }
-        return TPAction.MOVE;
+        return participant.TPAction.MOVE;
     }
-    
+
     @Override
     public Lane getNextLane() {
         // TODO: get next lane of the route
+        return null;
     }
 
     @Override
     public int getSpeed() {
         return speed;
     }
-    
+
     public EnumSet<InactiveVehicleTypes> getInactiveTypes() {
         return inactiveTypes;
     }
-    
+
     public enum InactiveVehicleTypes {
         EMERGENCY_CAR;
     }

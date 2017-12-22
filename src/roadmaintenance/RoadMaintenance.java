@@ -26,12 +26,12 @@ public class RoadMaintenance {
     public int[] getRoute(int currentLocation_id, int destination_id){
         //TODO interface with control system here
 
-        Route r = getRoute(currentLocation_id, destination_id);
+        Route r = null;//getRoute(currentLocation_id, destination_id);
 
         int[] route_ids = new int[r.lanes.size()];
 
         int i=0;
-        for(Lane l:r.lanes)
+        for(Lane l : r.lanes)
             route_ids[i++]=l.getId();
 
         return route_ids;

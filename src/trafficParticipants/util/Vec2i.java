@@ -1,4 +1,4 @@
-package util;
+package trafficParticipants.util;
 
 /**
  *
@@ -11,11 +11,11 @@ public class Vec2i {
         this.x = x;
         this.y = y;
     }
-    
+
     public Vec2i subtract(Vec2i other) {
         return new Vec2i(x - other.x, y - other.y);
     }
-    
+
     public int length() {
         return (int) Math.sqrt(x * x + y * y);
     }

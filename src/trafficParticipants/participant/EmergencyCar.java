@@ -1,17 +1,17 @@
-package participant;
+package trafficParticipants.participant;
+
+import trafficParticipants.util.Updateable;
 
 import java.util.EnumSet;
-import java.util.PriorityQueue;
-import util.Updateable;
 
 /**
  *
  * @author Christoph Kroell
  */
 public class EmergencyCar extends Vehicle implements Updateable {
-    
+
     public static final int FINISHED = 100;
-    
+
     private int goal;
     private int workState;
 
@@ -20,7 +20,7 @@ public class EmergencyCar extends Vehicle implements Updateable {
         this.goal = goal;
         this.workState = 0;
     }
-    
+
     public EmergencyCar(Vehicle vehicle, int goal) {
         super(vehicle.getSpeed(), EnumSet.noneOf(Vehicle.InactiveVehicleTypes.class));
         this.goal = goal;
@@ -28,9 +28,9 @@ public class EmergencyCar extends Vehicle implements Updateable {
     }
 
     @Override
-    public TPAction getAction() {
+    public participant.TPAction getAction() {
         if(workState == 100) {
-            return TPAction.STAY;
+            return participant.TPAction.STAY;
         }
         return super.getAction();
     }

@@ -1,24 +1,28 @@
-package street;
+package trafficParticipants.street;
+
+import trafficParticipants.util.Vec2i;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import util.Vec2i;
 
 public class Crossing {
-    
+
+    private final int id;
+
     /** The position of the crossing in eucledian spcace. */
     private final Vec2i position;
-    
+
     /** The outgoing and incoming lanes. */
     private final List<Lane> out, in;
 
-    public Crossing(int x, int y) {
-        this(new Vec2i(x, y));
+    public Crossing(int id, int x, int y) {
+        this(id, new Vec2i(x, y));
     }
-    
-    public Crossing(Vec2i position) {
+
+    public Crossing(int id ,Vec2i position) {
+        this.id = id;
         this.position = position;
         this.out = new ArrayList<>();
         this.in = new ArrayList<>();
@@ -35,13 +39,13 @@ public class Crossing {
     public List<Lane> getIn() {
         return in;
     }
-    
+
     public List<Lane> getOut(Crossing end) {
         return out.stream().
                 filter(l -> l.getEnd().equals(end)).
                 collect(Collectors.toList());
     }
-    
+
     public List<Lane> getIn(Crossing start) {
         return in.stream().
                 filter(l -> l.getStart().equals(start)).
@@ -76,5 +80,9 @@ public class Crossing {
     @Override
     public String toString() {
         return "Crossing{" + "position=" + position + '}';
+    }
+
+    public int getId() {
+        return id;
     }
 }

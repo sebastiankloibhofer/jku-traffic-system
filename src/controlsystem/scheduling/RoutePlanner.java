@@ -1,13 +1,10 @@
 package controlsystem.scheduling;
 
-import controlsystem.Controller;
 import controlsystem.model.Edge;
+import controlsystem.model.GraphPart;
 import controlsystem.model.Node;
 import controlsystem.model.Route;
-import controlsystem.trafficparticipants.street.Crossing;
-import controlsystem.trafficparticipants.street.GraphPart;
-import controlsystem.trafficparticipants.street.Lane;
-import sun.awt.image.ImageWatched;
+import trafficParticipants.street.Lane;
 
 import java.util.*;
 import java.util.concurrent.Callable;
@@ -22,8 +19,8 @@ public class RoutePlanner implements Callable<Route> {
     private final GraphPart src;
     private final GraphPart dst;
     private final Node srcNode, destNode;
-    ConcurrentMap<Long, Node> crossings;
-    ConcurrentMap<Long, Edge> lanes;
+    ConcurrentMap<Integer, Node> crossings;
+    ConcurrentMap<Integer, Edge> lanes;
 
     private Set<Node> settled;
     private Set<Node> unSettled;
@@ -31,7 +28,7 @@ public class RoutePlanner implements Callable<Route> {
     private Map<Node, Double> dist;
 
 
-    public RoutePlanner(ConcurrentMap<Long, Node> crossings, ConcurrentMap<Long, Edge> lanes, GraphPart src, GraphPart dst) {
+    public RoutePlanner(ConcurrentMap<Integer, Node> crossings, ConcurrentMap<Integer, Edge> lanes, GraphPart src, GraphPart dst) {
         this.crossings = crossings;
         this.lanes = lanes;
         this.src = src;
@@ -134,7 +131,7 @@ public class RoutePlanner implements Callable<Route> {
         return neighbours;
     }
 
-    private boolean isSettled(Long id) {
+    private boolean isSettled(Integer id) {
         return settled.contains(crossings.get(id));
     }
 

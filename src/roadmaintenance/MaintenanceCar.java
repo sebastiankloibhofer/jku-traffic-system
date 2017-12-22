@@ -1,6 +1,5 @@
 package roadmaintenance;
 
-import trafficParticipants.participant.TPAction;
 import trafficParticipants.participant.TrafficParticipant;
 import trafficParticipants.street.Lane;
 import trafficParticipants.util.Updateable;
@@ -94,12 +93,12 @@ public class MaintenanceCar implements TrafficParticipant, Updateable {
         }
     }
 
-    public TPAction getAction(){
+    public participant.TPAction getAction(){
         if(route[currentLane_index] == destination){
-            return TPAction.STAY;
+            return participant.TPAction.STAY;
         }
 
-        return TPAction.MOVE;
+        return participant.TPAction.MOVE;
     }
 
     public Lane getNextLane(){

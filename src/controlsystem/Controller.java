@@ -5,8 +5,6 @@ import controlsystem.model.Node;
 import controlsystem.model.Route;
 import controlsystem.persistence.ArchiveStore;
 import controlsystem.scheduling.RoutePlanner;
-import controlsystem.trafficparticipants.street.Crossing;
-import controlsystem.trafficparticipants.street.Lane;
 import controlsystem.util.Tuple.T2;
 
 import javax.swing.*;
@@ -34,13 +32,13 @@ public class Controller implements RoutingControl, ControlSystem {
     /** Thread pool for periodically running congestion detection. */
     private final ScheduledExecutorService schedExec = Executors.newSingleThreadScheduledExecutor();
 
-    public final ConcurrentMap<Long, Node> crossings;
-    public final ConcurrentMap<Long, Edge> lanes;
+    public final ConcurrentMap<Integer, Node> crossings;
+    public final ConcurrentMap<Integer, Edge> lanes;
     private final ArchiveStore rep;
 
     private final GraphPanel graph;
 
-    public Controller(ConcurrentMap<Long, Node> crossings, ConcurrentMap<Long, Edge> lanes, ArchiveStore rep) {
+    public Controller(ConcurrentMap<Integer, Node> crossings, ConcurrentMap<Integer, Edge> lanes, ArchiveStore rep) {
         this.crossings = crossings;
         this.lanes = lanes;
         this.rep = rep;
@@ -49,7 +47,7 @@ public class Controller implements RoutingControl, ControlSystem {
                         lanes.values().forEach(l -> {
                             double lvl = l.getUsageLevel();
 
-                            if (lvl >= Lane.CONGESTION_LVL)
+                            if (lvl >= Edge.CONGESTION_LVL)
                                 System.out.println("Detected congestion at lane " + l);
                         }),
                 INIT_DELAY,
@@ -66,19 +64,19 @@ public class Controller implements RoutingControl, ControlSystem {
     }
 
     @Override
-    public Route getRoute(long firstId, long thenId, long... nextIds) {
-        Lane first = lanes.get(firstId);
-        Lane then = lanes.get(thenId);
+    public Route getRoute(int firstId, int thenId, int... nextIds) {
+        Edge first = lanes.get(firstId);
+        Edge then = lanes.get(thenId);
 
         if (first == null || then == null)
             return null;
 
-        List<T2<Lane>> subRoutes = new LinkedList<>();
+        List<T2<Edge>> subRoutes = new LinkedList<>();
         subRoutes.add(t2(first, then));
-        Lane last = then;
+        Edge last = then;
 
-        for (long currId : nextIds) {
-            Lane curr = lanes.get(currId);
+        for (int currId : nextIds) {
+            Edge curr = lanes.get(currId);
             if (curr == null)
                 return null;
 
@@ -106,7 +104,7 @@ public class Controller implements RoutingControl, ControlSystem {
     }
 
     @Override
-    public double getLaneDensity(long laneId) {
+    public double getLaneDensity(int laneId) {
         if (lanes.containsKey(laneId))
             return lanes.get(laneId).getUsageLevel();
         else
@@ -114,20 +112,20 @@ public class Controller implements RoutingControl, ControlSystem {
     }
 
     @Override
-    public void updateParticipantCount(long laneId, int count) {
+    public void updateParticipantCount(int laneId, int count) {
         if (lanes.containsKey(laneId)) {
-            lanes.get(laneId).setParticipants(count);
+            lanes.get(laneId).setNParticipants(count);
             graph.repaint();
         }
     }
 
     @Override
-    public void reportDamage(long laneId, int severity) {
+    public void reportDamage(int laneId, int severity) {
         // TODO notify road maintenance
     }
 
     @Override
-    public void reportAccident(long laneId) {
+    public void reportAccident(int laneId) {
         // TODO inform emergencies
         // TODO notify road maintenance
     }
@@ -182,20 +180,20 @@ public class Controller implements RoutingControl, ControlSystem {
         crossings.add(c2);
         crossings.add(c3);
 
-        Edge l0 = new Edge(1, c0, c1);
-        l0.setParticipants(500);
-        Edge l1 = new Edge(2, c1, c0);
-        Edge l2 = new Edge(3, c0, c3);
-        Edge l3 = new Edge(4, c1, c3);
-        Edge l4 = new Edge(5, c1, c2);
-        l4.setParticipants(200);
-        Edge l5 = new Edge(6, c2, c0);
-        Edge l6 = new Edge(7, c3, c0);
-        Edge l7 = new Edge(8, c2, c3);
-        Edge l8 = new Edge(9, c3, c1);
-        Edge l9 = new Edge(10, c3, c2);
-        Edge l10 = new Edge(11, c0, c2);
-        Edge l11 = new Edge(12, c2, c1);
+        Edge l0 = new Edge(c0, c1);
+        l0.setNParticipants(500);
+        Edge l1 = new Edge(c1, c0);
+        Edge l2 = new Edge(c0, c3);
+        Edge l3 = new Edge(c1, c3);
+        Edge l4 = new Edge(c1, c2);
+        l4.setNParticipants(200);
+        Edge l5 = new Edge(c2, c0);
+        Edge l6 = new Edge(c3, c0);
+        Edge l7 = new Edge(c2, c3);
+        Edge l8 = new Edge(c3, c1);
+        Edge l9 = new Edge(c3, c2);
+        Edge l10 = new Edge(c0, c2);
+        Edge l11 = new Edge(c2, c1);
 
         Set<Edge> lanes = new HashSet<>();
         lanes.add(l0);
@@ -211,11 +209,11 @@ public class Controller implements RoutingControl, ControlSystem {
         lanes.add(l10);
         lanes.add(l11);
 
-        ConcurrentMap<Long, Edge> l = lanes.stream()
-                .collect(Collectors.toConcurrentMap(Lane::getId, Function.identity()));
+        ConcurrentMap<Integer, Edge> l = lanes.stream()
+                .collect(Collectors.toConcurrentMap(Edge::getId, Function.identity()));
 
-        ConcurrentMap<Long, Node> c = crossings.stream()
-                .collect(Collectors.toConcurrentMap(Crossing::getId, Function.identity()));
+        ConcurrentMap<Integer, Node> c = crossings.stream()
+                .collect(Collectors.toConcurrentMap(Node::getId, Function.identity()));
 
         Controller con  = new Controller(c, l, null);
         con.init();
@@ -223,7 +221,7 @@ public class Controller implements RoutingControl, ControlSystem {
 
         try {
             Thread.sleep(5000);
-            Lane lane = con.lanes.get(1L);
+            Edge lane = con.lanes.get(1);
 
             System.out.println("Blocking lane " + lane);
             lane.setBlocked(true);

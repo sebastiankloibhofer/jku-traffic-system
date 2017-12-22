@@ -1,37 +1,39 @@
-package street;
+package trafficParticipants.street;
+
+import trafficParticipants.participant.TPList;
+import trafficParticipants.participant.TrafficParticipant;
 
 import java.util.ArrayList;
 import java.util.List;
-import participant.TPList;
-import participant.TrafficParticipant;
+import java.util.Objects;
 
 public class Lane {
-    
+
     private static int nextID = 0;
-    
+
     /** The state of the several units of the street */
     public final int[] streetUnitState;
-    
+
     /** Id of the lane */
     private final int id;
-    
+
     /** The start and end node of the lane. */
     private final Crossing start, end;
-    
-    /** 
+
+    /**
      * The lanes following the same direction and(start -> end)
      * the ones going into the opposite direction(end -> start).
      */
     private final List<Lane> twins, inverseTwins;
-    
+
     /**
      * The traffic participants currently following the lane.
      */
     private final TPList trafficParticipants;
-    
+
     /** The minimal and maximal speed allowed in the lane. */
     private int minSpeed, maxSpeed;
-    
+
     public Lane(Crossing start, Crossing end) {
         this.id = nextID++;
         this.start = start;
@@ -40,13 +42,13 @@ public class Lane {
         this.inverseTwins = new ArrayList<>();
         this.connect();
         this.trafficParticipants = new TPList(end.getPosition().subtract(start.getPosition()).length());
-        
+
         this.streetUnitState = new int[end.getPosition().subtract(start.getPosition()).length() + 2];
         for(int i = 0; i < streetUnitState.length; i++) {
             streetUnitState[i] = 100;
         }
     }
-    
+
     /**
      * Connects the newly created lane to the start and end crossing
      * as well as to all its twins and inverse twins.
@@ -67,7 +69,7 @@ public class Lane {
     public int getId() {
         return id;
     }
-    
+
     public Crossing getStart() {
         return start;
     }
@@ -107,44 +109,23 @@ public class Lane {
     public int[] getStreetUnitState() {
         return streetUnitState;
     }
-    
+
     public boolean canEnter(TrafficParticipant tp) {
         return trafficParticipants.canAdd() && tp.getSpeed() > getMinSpeed() && tp.getSpeed() < getMaxSpeed();
     }
-    
-    /**
-     * Gives an estimated value about the degree of capacity utilization.
-     * 
-     * @return 
-     */
-    public int getCapacity() {
-        //TODO: implement heuristic for pathfinding
-        return 0;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Lane lane = (Lane) o;
+        return id == lane.id;
     }
 
     @Override
     public int hashCode() {
-        int hash = 5;
-        hash = 37 * hash + this.id;
-        return hash;
-    }
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final Lane other = (Lane) obj;
-        if (this.id != other.id) {
-            return false;
-        }
-        return true;
+        return Objects.hash(id);
     }
 
     @Override

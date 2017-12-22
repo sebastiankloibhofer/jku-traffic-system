@@ -1,14 +1,12 @@
 package controlsystem.model;
 
 import com.sun.deploy.util.StringUtils;
-import controlsystem.trafficparticipants.street.Crossing;
-import controlsystem.trafficparticipants.street.GraphPart;
-import controlsystem.trafficparticipants.street.Lane;
+import trafficParticipants.street.Crossing;
+import trafficParticipants.street.Lane;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 /**
@@ -54,6 +52,6 @@ public class Route {
     public String toString() {
 
         return  "Route from "+start()+" to "+end() + ":" + System.lineSeparator() +
-                StringUtils.join(this.lanes.stream().map(lane -> lane.toString()).collect(Collectors.toList()), System.lineSeparator());
+                StringUtils.join(this.lanes.stream().map(Lane::toString).collect(Collectors.toList()), System.lineSeparator());
     }
 }

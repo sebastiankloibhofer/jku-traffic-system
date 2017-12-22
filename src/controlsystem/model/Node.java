@@ -1,13 +1,19 @@
 package controlsystem.model;
 
-import controlsystem.trafficparticipants.street.Crossing;
+
+import trafficParticipants.street.Crossing;
 
 import java.awt.*;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 
-public class Node extends Crossing {
+public class Node extends Crossing implements GraphPart {
+
+    /**
+     * Average vehicle length in the real world.
+     */
+    public static final double AVG_CAR_LENGTH = 5d;
 
     public static final int R_OFFSET = 100;
     public static final int G_OFFSET = 100;
@@ -19,8 +25,12 @@ public class Node extends Crossing {
     public static final int MAX_RADIUS = 10;
     public static final int MIN_RADIUS = 1;
 
-    public Node(long id, int x, int y) {
+    public Node(int id, int x, int y) {
         super(id, x, y);
+    }
+
+    public int nLanes() {
+        return getIn().size() + getIn().size();
     }
 
     public final int x() {
@@ -49,6 +59,6 @@ public class Node extends Crossing {
     }
 
     private double sizeFactor() {
-        return min(1, getNrOfLanes() / MAX_LANE_EST);
+        return min(1, nLanes() / MAX_LANE_EST);
     }
 }
