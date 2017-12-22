@@ -3,8 +3,8 @@ package controlsystem;
 import controlsystem.model.Route;
 import controlsystem.persistence.ArchiveStore;
 import controlsystem.scheduling.RoutePlanner;
-import controlsystem.trafficparticipants.street.Crossing;
-import controlsystem.trafficparticipants.street.Lane;
+import trafficparticipants.street.Crossing;
+import trafficparticipants.street.Lane;
 import controlsystem.util.Tuple.T2;
 
 import java.util.LinkedList;
