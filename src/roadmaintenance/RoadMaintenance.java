@@ -22,8 +22,12 @@ public class RoadMaintenance {
         scheduler.reschedule(dmgInfo);
     }
 
-    public Lane[] getRoute(int currentLocation_id, int destination_id){
+    public int[] getRoute(int currentLocation_id, int destination_id){
         //TODO interface with control system here
+        return null;
+    }
+
+    public Lane getLane(int id){
         return null;
     }
 

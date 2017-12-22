@@ -8,9 +8,9 @@ import static roadmaintenance.RoadMaintenance.roadMaintenance;
 
 public class MaintenanceCar implements TrafficParticipant {
 
-    private Lane[] route;
+    private int[] route;
     private int currentLane_index;
-    private Lane destination;
+    private int destination;
     private DamageType dmgType;
     private int taskId;
     private int currentStreetUnit_index;
@@ -26,7 +26,7 @@ public class MaintenanceCar implements TrafficParticipant {
     }
 
     private void repair(){
-        int[] toRepair = destination.streetUnitState;
+        int[] toRepair = roadMaintenance.getLane(destination).streetUnitState;
 
         if(dmgType == DamageType.SubsystemDamage){
             if(! damageEvaluated){
@@ -108,10 +108,10 @@ public class MaintenanceCar implements TrafficParticipant {
             return null;
         }
 
-        return route[currentLane_index++];
+        return roadMaintenance.getLane(route[currentLane_index++]);
     }
 
-    public void updateTarget(Lane[] newRoute, DamageType dmgType, int taskId){
+    public void updateTarget(int[] newRoute, DamageType dmgType, int taskId){
         this.route = newRoute;
         destination = this.route[this.route.length - 1];
         currentLane_index = 0;
@@ -122,7 +122,7 @@ public class MaintenanceCar implements TrafficParticipant {
         repairingCriticalDmg = true;
     }
 
-    public Lane currentLane(){
+    public int currentLane(){
         return route[currentLane_index];
     }
 }
