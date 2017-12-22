@@ -1,9 +1,7 @@
 package participant;
 
 import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 import street.Lane;
 import util.Updateable;
@@ -14,21 +12,16 @@ import util.Updateable;
  */
 public class TPManager {
     
-    private final List<Lane> lanes;
+    private final Map<Integer, Lane> lanes;
     private final Queue<Integer> accidents;
 
-    public TPManager(List<Lane> lanes) {
+    public TPManager(Map<Integer, Lane> lanes) {
         this.lanes = lanes;
         this.accidents = new ArrayDeque<>();
     }
     
-    public TPManager(Lane... lanes) {
-        this.lanes = new ArrayList<>(Arrays.asList(lanes));
-        this.accidents = new ArrayDeque<>();
-    }
-    
     public void update() {
-        for(Lane lane : lanes) {
+        for(Lane lane : lanes.values()) {
             lane.getTrafficParticipants().update();
             for(TrafficParticipant tp : lane.getTrafficParticipants()) {
                 if(tp instanceof Updateable) {
@@ -61,7 +54,8 @@ public class TPManager {
         accidents.add(laneId);
     }
 
-    public List<Lane> getLanes() {
-        return lanes;
+    public Lane getLane(int laneId) {
+        return lanes.get(laneId);
     }
 }
+
