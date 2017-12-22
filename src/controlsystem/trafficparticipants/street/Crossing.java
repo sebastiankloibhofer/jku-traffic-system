@@ -10,11 +10,6 @@ import java.util.stream.Collectors;
 public class Crossing implements GraphPart {
 
     /**
-     * Approximation of the coordinate system to the real world.
-     */
-    public static final double METRES_PER_COORDINATE = 1d;
-
-    /**
      * Average vehicle length in the real world.
      */
     public static final double AVG_CAR_LENGTH = 5d;
@@ -65,6 +60,10 @@ public class Crossing implements GraphPart {
         return in.stream().
                 filter(l -> l.getStart().equals(start)).
                 collect(Collectors.toList());
+    }
+
+    public int getNrOfLanes() {
+        return in.size() + out.size();
     }
 
     @Override
