@@ -21,6 +21,7 @@ public class RoutePlanner implements Callable<Route> {
 
     private final GraphPart src;
     private final GraphPart dst;
+    private final Node srcNode, destNode;
     ConcurrentMap<Long, Node> crossings;
     ConcurrentMap<Long, Edge> lanes;
 
@@ -29,28 +30,51 @@ public class RoutePlanner implements Callable<Route> {
     private Map<Node, Node> predecessors;
     private Map<Node, Double> dist;
 
+
     public RoutePlanner(ConcurrentMap<Long, Node> crossings, ConcurrentMap<Long, Edge> lanes, GraphPart src, GraphPart dst) {
         this.crossings = crossings;
         this.lanes = lanes;
         this.src = src;
         this.dst = dst;
+
+        if(src instanceof Node) {
+            srcNode = crossings.get(src.getId());
+        } else if (src instanceof Lane) {
+            srcNode = crossings.get(((Lane)src).getEnd().getId());
+        } else {
+            throw new RuntimeException("should not happen, src must either be Crossing or Lane");
+        }
+
+        if(dst instanceof Node) {
+            destNode = crossings.get(dst.getId());
+        } else if (src instanceof Lane) {
+            destNode = crossings.get(((Lane)src).getStart().getId());
+        } else {
+            throw new RuntimeException("should not happen, dst must either be Node/Crossing or Lane");
+        }
     }
+
 
     @Override
     public Route call() throws Exception {
         // calculate path from current traffic situation
         // TODO: Optimization, store derived paths and don't recalculate every time
-        calcShortestPaths(src);
-
-        return getPath(dst);
+        calcShortestPaths(srcNode);
+        return getPath(destNode);
     }
 
-    private void calcShortestPaths(GraphPart src) {
+    /** Dijkstra - Implementation based on
+     * <a href="http://digital.cs.usu.edu/~allanv/cs5050/Graph.java">Utah State University - Dr. Vicki H. Allan</a>
+     * @param start
+     */
+    private void calcShortestPaths(Node start) {
         settled = new HashSet<>();
         unSettled = new HashSet<>();
         dist = new HashMap<>();
         predecessors = new HashMap<>();
-        Node start = crossings.get(src.getId());
+
+
+
         dist.put(start, 0d);
         unSettled.add(start);
         while(unSettled.size() > 0) {
@@ -95,7 +119,8 @@ public class RoutePlanner implements Callable<Route> {
     }
 
     private double getShortestDist(Node dest) {
-        return dist.get(dest);
+        Double d = dist.get(dest);
+        return d == null ? Double.MAX_VALUE : d;
     }
 
     private List<Node> getNeigbours(Node node) {
@@ -113,9 +138,9 @@ public class RoutePlanner implements Callable<Route> {
         return settled.contains(crossings.get(id));
     }
 
-    private Route getPath(GraphPart dest) {
+    private Route getPath(Node dest) {
         LinkedList<Lane> path = new LinkedList<>();
-        Node step = crossings.get(dest.getId());
+        Node step = dest;
 
         if(predecessors.get(step) == null) return null;
 
