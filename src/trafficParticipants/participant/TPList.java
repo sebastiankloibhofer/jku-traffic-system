@@ -1,5 +1,6 @@
 package participant;
 
+import java.util.Collection;
 import java.util.Iterator;
 
 /**
@@ -53,6 +54,58 @@ public class TPList implements Iterable<TrafficParticipant>{
         }
         return false;
     }
+    
+    /**
+     * Adds a traffic participant to the lane.
+     * 
+     * @param tp The traffic participant.
+     * @return True if {@link #canAdd()} is true, that is if there is no traffic
+     * participant at position 0 or below.
+     * @throws NullPointerException is thrown if the traffic participant is null.
+     */
+    public boolean add(TrafficParticipant tp) throws NullPointerException, IllegalArgumentException {
+        if(tp == null) {
+            throw new NullPointerException("You cannot add null to a TPList");
+        }
+        if(canAdd()) {
+            TPNode toAdd = new TPNode(tp, last.pos - 1);
+            if(first == null) {
+                first = toAdd;
+                last = first;
+            } else {
+                last.next = toAdd;
+                toAdd.prev = last;
+                last = last.next;
+            }
+            size++;
+            return true;
+        }
+        return false;
+    }
+    
+    /**
+     * Adds a traffic participant to the lane.
+     * 
+     * @param tps The traffic participants.
+     * @throws NullPointerException is thrown if a traffic participant is null.
+     */
+    public void addAll(TrafficParticipant... tps) throws NullPointerException {
+        for(TrafficParticipant tp : tps) {
+            add(tp);
+        }
+    }
+    
+    /**
+     * Adds a traffic participant to the lane.
+     * 
+     * @param tps The traffic participants.
+     * @throws NullPointerException is thrown if a traffic participant is null.
+     */
+    public void addAll(Collection<TrafficParticipant> tps) throws NullPointerException {
+        for(TrafficParticipant tp : tps) {
+            add(tp);
+        }
+    }
 
     /**
      * Removes a traffic participant if it is within the list and returns true
@@ -75,6 +128,28 @@ public class TPList implements Iterable<TrafficParticipant>{
         }
         size--;
         return true;
+    }
+    
+    /**
+     * Removes a traffic participant if it is within the list and returns true
+     * if this was successful.
+     * @param tps The traffic participants to remove.
+     */
+    public void removeAll(TrafficParticipant... tps) {
+        for(TrafficParticipant tp : tps) {
+            remove(tp);
+        } 
+    }
+    
+    /**
+     * Removes a traffic participant if it is within the list and returns true
+     * if this was successful.
+     * @param tps The traffic participants to remove.
+     */
+    public void removeAll(Collection<TrafficParticipant> tps) {
+        for(TrafficParticipant tp : tps) {
+            remove(tp);
+        } 
     }
     
     /**
