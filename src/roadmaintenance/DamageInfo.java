@@ -1,6 +1,6 @@
 package roadmaintenance;
 
-public class DamageInfo implements Comparable<DamageInfo>{
+public class DamageInfo {
 
     public final int damageReport_id;
     public final int priority;
@@ -12,10 +12,5 @@ public class DamageInfo implements Comparable<DamageInfo>{
         this.priority = priority;
         this.destination_id = destination_id;
         this.type = type;
-    }
-
-    @Override
-    public int compareTo(DamageInfo o) {
-        return this.priority - o.priority;
     }
 }
