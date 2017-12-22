@@ -87,7 +87,7 @@ public class Controller implements RoutingControl, ControlSystem {
         }
 
         List<Future<Route>> pathPromise = subRoutes.stream()
-                .map(p -> exec.submit(new RoutePlanner(p._0, p._1)))
+                .map(p -> exec.submit(new RoutePlanner(crossings, lanes, p._0, p._1)))
                 .collect(Collectors.toList());
 
         List<Route> routes = pathPromise.stream()
