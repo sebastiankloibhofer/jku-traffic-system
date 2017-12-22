@@ -1,9 +1,17 @@
 package controlsystem.scheduling;
 
+import controlsystem.Controller;
+import controlsystem.model.Edge;
+import controlsystem.model.Node;
 import controlsystem.model.Route;
+import controlsystem.trafficparticipants.street.Crossing;
 import controlsystem.trafficparticipants.street.GraphPart;
+import controlsystem.trafficparticipants.street.Lane;
+import sun.awt.image.ImageWatched;
 
+import java.util.*;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentMap;
 
 public class RoutePlanner implements Callable<Route> {
 
@@ -13,15 +21,120 @@ public class RoutePlanner implements Callable<Route> {
 
     private final GraphPart src;
     private final GraphPart dst;
+    ConcurrentMap<Long, Node> crossings;
+    ConcurrentMap<Long, Edge> lanes;
 
-    public RoutePlanner(GraphPart src, GraphPart dst) {
+    private Set<Node> settled;
+    private Set<Node> unSettled;
+    private Map<Node, Node> predecessors;
+    private Map<Node, Double> dist;
+
+    public RoutePlanner(ConcurrentMap<Long, Node> crossings, ConcurrentMap<Long, Edge> lanes, GraphPart src, GraphPart dst) {
+        this.crossings = crossings;
+        this.lanes = lanes;
         this.src = src;
         this.dst = dst;
     }
 
     @Override
     public Route call() throws Exception {
-        // TODO calculate path from current traffic situation
+        // calculate path from current traffic situation
+        // TODO: Optimization, store derived paths and don't recalculate every time
+        calcShortestPaths(src);
+
+        return getPath(dst);
+    }
+
+    private void calcShortestPaths(GraphPart src) {
+        settled = new HashSet<>();
+        unSettled = new HashSet<>();
+        dist = new HashMap<>();
+        predecessors = new HashMap<>();
+        Node start = crossings.get(src.getId());
+        dist.put(start, 0d);
+        unSettled.add(start);
+        while(unSettled.size() > 0) {
+            Node node = getMin(unSettled);
+            settled.add(node);
+            unSettled.remove(node);
+            findMinDist(node);
+        }
+    }
+
+
+    private Node getMin(Set<Node> nodes) {
+        Node min = null;
+        for(Node n : nodes) {
+            if(min == null) min = n;
+            else {
+                if(getShortestDist(n) < getShortestDist(min)) min = n;
+            }
+        }
+        return min;
+    }
+
+    private void findMinDist(Node node) {
+        List<Node> adjacent = getNeigbours(node);
+        for(Node dest : adjacent) {
+            if(getShortestDist(dest) > getShortestDist(node) + getDist(node, dest) ){
+                dist.put(dest, getShortestDist(node) + getDist(node, dest));
+                predecessors.put(dest, node);
+                unSettled.add(dest);
+            }
+        }
+    }
+
+    private double getDist(Node node, Node dest) {
+        for(Edge e : lanes.values()) {
+            if( e.getStart().getId() == node.getId() &&
+                    e.getEnd().getId() == dest.getId()) {
+                return e.getUsageLevel();
+            }
+        }
+        throw new RuntimeException("no distance found, should not happen");
+    }
+
+    private double getShortestDist(Node dest) {
+        return dist.get(dest);
+    }
+
+    private List<Node> getNeigbours(Node node) {
+        List<Node> neighbours = new ArrayList<>();
+        for(Edge e : lanes.values()) {
+            if( e.getStart().getId() == node.getId() &&
+                !isSettled(e.getEnd().getId()) ) {
+                neighbours.add(crossings.get(e.getEnd().getId()));
+            }
+        }
+        return neighbours;
+    }
+
+    private boolean isSettled(Long id) {
+        return settled.contains(crossings.get(id));
+    }
+
+    private Route getPath(GraphPart dest) {
+        LinkedList<Lane> path = new LinkedList<>();
+        Node step = crossings.get(dest.getId());
+
+        if(predecessors.get(step) == null) return null;
+
+        Node prev;
+        do {
+            prev = step;
+            step = predecessors.get(step);
+            path.add(getLaneFromNodes(step, prev)); //swap from/to as we're traversing starting at destination
+        } while(predecessors.get(step) != null);
+        Collections.reverse(path);
+        return new Route(path);
+    }
+
+    private Lane getLaneFromNodes(Node from, Node to) {
+        //TODO: return List of Lanes, for the case that multiple connections exist
+        for (Lane out : from.getOut() ) {
+            if(to.getIn().contains(out)) return out;
+        }
         return null;
     }
+
 }
