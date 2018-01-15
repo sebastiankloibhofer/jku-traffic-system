@@ -1,7 +1,7 @@
-package street;
+package trafficParticipants.street;
 
 import java.util.Arrays;
-import util.Vec2i;
+import trafficParticipants.util.Vec2i;
 
 /**
  * A premade street network.

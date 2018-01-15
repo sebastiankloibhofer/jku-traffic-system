@@ -1,10 +1,10 @@
-package street;
+package trafficParticipants.street;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import util.Vec2i;
+import trafficParticipants.util.Vec2i;
 
 public class Crossing {
     

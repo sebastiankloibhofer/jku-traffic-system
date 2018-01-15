@@ -1,9 +1,9 @@
-package street;
+package trafficParticipants.street;
 
 import java.util.ArrayList;
 import java.util.List;
-import participant.TPList;
-import participant.TrafficParticipant;
+import trafficParticipants.participant.TPList;
+import trafficParticipants.participant.TrafficParticipant;
 
 public class Lane {
     

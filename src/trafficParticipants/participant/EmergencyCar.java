@@ -1,8 +1,8 @@
-package participant;
+package trafficParticipants.participant;
 
 import java.util.EnumSet;
 import java.util.PriorityQueue;
-import util.Updateable;
+import trafficParticipants.util.Updateable;
 
 /**
  *

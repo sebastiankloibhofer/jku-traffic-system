@@ -21,6 +21,8 @@ public class Scheduler {
 
     private PriorityQueue<DamageInfo> toBeMaintained = new PriorityQueue<>();
 
+    private ResourceManager resourceManager;
+
 
     public Scheduler(int availableMaintenanceCars){
         maintenanceTasks = new MaintenanceTask[availableMaintenanceCars];
@@ -33,6 +35,13 @@ public class Scheduler {
         }
 
         roadMaintenance.headquarters.getTrafficParticipants().addAll(cars);
+
+        Resources[] resources = new Resources[2];
+
+        resources[0] = new Resources("concreteFactory", ResourceManager.concrete_name, 1000);
+        resources[1] = new Resources("steelFactory(you know which one)", ResourceManager.steel_name, 1000);
+
+        resourceManager = new ResourceManager(resources);
     }
 
     private void issueMaintenanceSession(MaintenanceTask mt, DamageInfo dmgInfo, int dest_id, DamageType type, int taskId){
@@ -41,13 +50,17 @@ public class Scheduler {
     }
 
     public void reschedule(DamageInfo dmgInfo){
-        for(int i=0; i<maintenanceTasks.length; i++){
-            MaintenanceTask mt = maintenanceTasks[i];
+        Resources[] resources = resourceManager.prepareResources(dmgInfo);
 
-            if(mt.dmgInfo == null){
-                issueMaintenanceSession(mt, dmgInfo, dmgInfo.destination_id, dmgInfo.type, i);
+        if(resources != null){
+            for(int i=0; i<maintenanceTasks.length; i++){
+                MaintenanceTask mt = maintenanceTasks[i];
 
-                return;
+                if(mt.dmgInfo == null){
+                    issueMaintenanceSession(mt, dmgInfo, dmgInfo.destination_id, dmgInfo.type, i);
+
+                    return;
+                }
             }
         }
 

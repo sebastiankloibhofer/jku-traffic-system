@@ -1,10 +1,10 @@
-package participant;
+package trafficParticipants.participant;
 
 import java.util.ArrayDeque;
 import java.util.Map;
 import java.util.Queue;
-import street.Lane;
-import util.Updateable;
+import trafficParticipants.street.Lane;
+import trafficParticipants.util.Updateable;
 
 /**
  *

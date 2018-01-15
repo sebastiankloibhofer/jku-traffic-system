@@ -1,7 +1,7 @@
-package participant;
+package trafficParticipants.participant;
 
 import java.util.EnumSet;
-import street.Lane;
+import trafficParticipants.street.Lane;
 
 /**
  *
