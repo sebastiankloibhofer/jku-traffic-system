@@ -1,4 +1,4 @@
-package roadmaintenance;
+package main.java.roadmaintenance;
 
 import java.util.HashMap;
 

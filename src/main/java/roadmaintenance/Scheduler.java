@@ -1,5 +1,7 @@
 package roadmaintenance;
 
+import main.java.roadmaintenance.ResourceManager;
+import main.java.roadmaintenance.Resources;
 import trafficParticipants.participant.TrafficParticipant;
 
 import java.util.PriorityQueue;
