@@ -12,7 +12,7 @@ public class MaintenanceCar implements TrafficParticipant, Updateable {
     private int[] route;
     private int currentLane_index;
     private int destination;
-    private DamageType dmgType;
+    private roadmaintenance.DamageType dmgType;
     private int taskId;
     private int currentStreetUnit_index;
     private int damagedStreetUnits_count;
@@ -29,8 +29,13 @@ public class MaintenanceCar implements TrafficParticipant, Updateable {
     private void repair(){
         int[] toRepair = roadMaintenance.getLane(destination).streetUnitState;
 
-        if(dmgType == DamageType.SubsystemDamage){
+        if(dmgType == roadmaintenance.DamageType.SubsystemDamage){
+            //routine for subsystem damage
+
             if(! damageEvaluated){
+                //evaluate damage
+                //lane fringes are only needed to be considered
+
                 if(toRepair[0] == 0)
                     damagedStreetUnits_count++;
 
@@ -43,6 +48,8 @@ public class MaintenanceCar implements TrafficParticipant, Updateable {
             }
 
             if(repairingCriticalDmg){
+                //damage remains still below acceptable threshold
+
                 if(toRepair[0] < threshold)
                     toRepair[0]++;
                 else if(toRepair[toRepair.length-1] < threshold)
@@ -51,18 +58,26 @@ public class MaintenanceCar implements TrafficParticipant, Updateable {
                     repairingCriticalDmg = false;
             }
             else{
+                //if nothing else to do, try to repair to maximum
+
                 if(toRepair[0] < 100)
                     toRepair[0]++;
                 else if(toRepair[toRepair.length-1] < 100)
                     toRepair[toRepair.length-1]++;
                 else {
                     damageEvaluated = false;
-                    dmgType = DamageType.StreetDamage;
+
+                    //if nothing else to do, try to repair entire lane
+                    dmgType = roadmaintenance.DamageType.StreetDamage;
                 }
             }
         }
         else{
+            //routine for street damage
+
             if(! damageEvaluated){
+                //evaluate damage
+                //scan entire lane
                 damagedStreetUnits_count = 0;
 
                 for(currentStreetUnit_index = 1; currentStreetUnit_index < toRepair.length-1; currentStreetUnit_index++)
@@ -74,20 +89,24 @@ public class MaintenanceCar implements TrafficParticipant, Updateable {
             }
 
             if(repairingCriticalDmg){
+                //damage remains still below acceptable threshold
                 if(toRepair[currentStreetUnit_index] < threshold){
                     toRepair[currentStreetUnit_index]++;
                 }
 
+                //look for next critical damage
                 while(currentStreetUnit_index >= 1 && toRepair[currentStreetUnit_index--] >= threshold);
 
                 if(currentStreetUnit_index < 1){
                     repairingCriticalDmg = false;
                 }
             }else{
+                //if nothing else to do, try to repair to maximum
+
                 if(toRepair[currentStreetUnit_index] < 100)
                     toRepair[currentStreetUnit_index]++;
                 else if(currentStreetUnit_index == toRepair.length - 2)
-                    roadMaintenance.reportFinishedTask(taskId);
+                    roadMaintenance.reportFinishedTask(taskId); //routine is finished!
                 else
                     currentStreetUnit_index++;
             }
@@ -110,7 +129,7 @@ public class MaintenanceCar implements TrafficParticipant, Updateable {
         return roadMaintenance.getLane(route[currentLane_index++]);
     }
 
-    public void updateTarget(int[] newRoute, DamageType dmgType, int taskId){
+    public void updateTarget(int[] newRoute, roadmaintenance.DamageType dmgType, int taskId){
         this.route = newRoute;
         destination = this.route[this.route.length - 1];
         currentLane_index = 0;

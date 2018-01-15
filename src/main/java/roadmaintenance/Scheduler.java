@@ -29,6 +29,7 @@ public class Scheduler {
     public Scheduler(int availableMaintenanceCars){
         maintenanceTasks = new MaintenanceTask[availableMaintenanceCars];
 
+        //setup cars
         TrafficParticipant[] cars = new TrafficParticipant[availableMaintenanceCars];
         for(int i =0; i<maintenanceTasks.length; i++) {
             maintenanceTasks[i] = new MaintenanceTask();
@@ -36,8 +37,10 @@ public class Scheduler {
             cars[i] = maintenanceTasks[i].car;
         }
 
+        //register cars in simulation
         roadMaintenance.headquarters.getTrafficParticipants().addAll(cars);
 
+        //just a toy example for how resources would be setup
         Resources[] resources = new Resources[2];
 
         resources[0] = new Resources("concreteFactory", ResourceManager.concrete_name, 1000);
@@ -52,25 +55,31 @@ public class Scheduler {
     }
 
     public void reschedule(DamageInfo dmgInfo){
+        //check for resources
         Resources[] resources = resourceManager.prepareResources(dmgInfo);
 
         if(resources != null){
+            //if resources available, issue MaintenanceSession to next best car
+
             for(int i=0; i<maintenanceTasks.length; i++){
                 MaintenanceTask mt = maintenanceTasks[i];
 
                 if(mt.dmgInfo == null){
                     issueMaintenanceSession(mt, dmgInfo, dmgInfo.destination_id, dmgInfo.type, i);
 
+                    //maintenance task is taken care of!
                     return;
                 }
             }
         }
 
+        //store maintenance task for later
         toBeMaintained.add(dmgInfo);
     }
 
     public void reportFinishedTask(int taskId){
         if(toBeMaintained.isEmpty()){
+            //if nothing to do, order car back
             issueMaintenanceSession(maintenanceTasks[taskId], null, roadMaintenance.headquarters.getId(), null, taskId);
         }
         else {

@@ -21,6 +21,7 @@ public class ResourceManager {
     public Resources[] prepareResources(DamageInfo dmgInfo){
         Resources[] resources = null;
 
+        //arbitrary heuristic approach sofar, should be replaced with statistical analysis
         switch(dmgInfo.type){
             case SubsystemDamage:{
                 resources = new Resources[2];
@@ -28,6 +29,8 @@ public class ResourceManager {
                 resources[1] = this.resources.get(steel_name).aquire(5);
 
                if(resources[0]==null || resources[1]==null){
+                   //resource not available: report!
+
                    resourcesAvailable = false;
                    resources = null;
 
@@ -55,6 +58,8 @@ public class ResourceManager {
                 resources[0] = this.resources.get(concrete_name).aquire(7);
 
                 if(resources[0]==null){
+                    //resource not available: report!
+
                     resourcesAvailable = false;
                     resources = null;
 

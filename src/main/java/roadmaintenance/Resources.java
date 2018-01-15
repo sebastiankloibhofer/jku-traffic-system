@@ -12,6 +12,7 @@ public class Resources {
     }
 
     public Resources aquire(int quantity){
+        //wanted quantity exceeds capacity
        if(quantity > this.quantity)
            return null;
 
