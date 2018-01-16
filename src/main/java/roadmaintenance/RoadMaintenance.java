@@ -28,10 +28,10 @@ public class RoadMaintenance {
 
         Route r = null;//getRoute(currentLocation_id, destination_id);
 
-        int[] route_ids = new int[r.lanes.size()];
+        int[] route_ids = new int[r.getLanes().size()];
 
         int i=0;
-        for(Lane l : r.lanes)
+        for(Lane l : r.getLanes())
             route_ids[i++]=l.getId();
 
         return route_ids;

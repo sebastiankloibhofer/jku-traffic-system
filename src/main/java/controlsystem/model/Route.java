@@ -4,34 +4,44 @@ import com.sun.deploy.util.StringUtils;
 import trafficParticipants.street.Crossing;
 import trafficParticipants.street.Lane;
 
+import javax.persistence.*;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static javax.persistence.FetchType.EAGER;
+
 /**
  * Represents a calculated route between two crossings.
  */
+@Entity
+@Table(name = "routes")
 public class Route {
-    public final List<Lane> lanes;
+
+    @ManyToMany(fetch = EAGER)
+    @JoinTable(name = "route_lanes")
+    private List<Lane> lanes;
+
+    @ManyToOne(fetch = EAGER)
+    @JoinColumn(name = "start", nullable = false)
+    private Crossing start;
+
+    @ManyToOne(fetch = EAGER)
+    @JoinColumn(name = "end", nullable = false)
+    private Crossing end;
 
     public Route(List<Lane> lanes) {
         if (lanes.isEmpty())
             throw new IllegalArgumentException("Cannot create empty route");
 
         this.lanes = Collections.unmodifiableList(lanes);
+        start = lanes.get(0).getStart();
+        end = lanes.get(lanes.size() - 1).getEnd();
     }
 
     public Route(Lane... lanes) {
         this(Arrays.asList(lanes));
-    }
-
-    public Crossing start() {
-        return lanes.get(0).getStart();
-    }
-
-    public Crossing end() {
-        return lanes.get(lanes.size() - 1).getEnd();
     }
 
     public static Route of(List<Route> routes) {
@@ -51,7 +61,31 @@ public class Route {
     @Override
     public String toString() {
 
-        return  "Route from "+start()+" to "+end() + ":" + System.lineSeparator() +
+        return "Route from " + start + " to " + end + ":" + System.lineSeparator() +
                 StringUtils.join(this.lanes.stream().map(Lane::toString).collect(Collectors.toList()), System.lineSeparator());
+    }
+
+    public List<Lane> getLanes() {
+        return lanes;
+    }
+
+    public void setLanes(List<Lane> lanes) {
+        this.lanes = lanes;
+    }
+
+    public Crossing getStart() {
+        return start;
+    }
+
+    private void setStart(Crossing start) {
+        this.start = start;
+    }
+
+    public Crossing getEnd() {
+        return end;
+    }
+
+    private void setEnd(Crossing end) {
+        this.end = end;
     }
 }
