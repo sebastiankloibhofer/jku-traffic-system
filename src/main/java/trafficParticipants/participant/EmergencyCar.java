@@ -1,29 +1,26 @@
-package trafficParticipants.participant;
-
-import trafficParticipants.util.Updateable;
+package participant;
 
 import java.util.EnumSet;
+import street.Lane;
+import util.Updateable;
 
 /**
  *
  * @author Christoph Kroell
  */
 public class EmergencyCar extends Vehicle implements Updateable {
-
+    
     public static final int FINISHED = 100;
-
-    private int goal;
+    
     private int workState;
 
-    public EmergencyCar(int speed, int goal) {
-        super(speed, EnumSet.noneOf(Vehicle.InactiveVehicleTypes.class));
-        this.goal = goal;
+    public EmergencyCar(int speed, Lane start, Lane goal) {
+        super(speed, EnumSet.noneOf(Vehicle.InactiveVehicleTypes.class), start, goal);
         this.workState = 0;
     }
-
-    public EmergencyCar(Vehicle vehicle, int goal) {
-        super(vehicle.getSpeed(), EnumSet.noneOf(Vehicle.InactiveVehicleTypes.class));
-        this.goal = goal;
+    
+    public EmergencyCar(Vehicle vehicle, Lane start, Lane goal) {
+        super(vehicle.getSpeed(), EnumSet.noneOf(Vehicle.InactiveVehicleTypes.class), start, goal);
         this.workState = 0;
     }
 

@@ -1,4 +1,4 @@
-package trafficParticipants.participant;
+package participant;
 
 public enum TPAction {
     MOVE,

@@ -1,4 +1,4 @@
-package trafficParticipants.participant;
+package participant;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -9,11 +9,11 @@ import java.util.Iterator;
  * participant cannot enter the next lane he will wait at the end of the lane.
  * Traffic participants will queue up behind  each other with a fixed distance
  * of 1.
- *
+ * 
  * @author Christoph Kroell
  */
 public class TPList implements Iterable<TrafficParticipant>{
-
+    
     private final int length;
     private TPNode first, last;
     private int size = 0;
@@ -21,10 +21,10 @@ public class TPList implements Iterable<TrafficParticipant>{
     public TPList(int length) {
         this.length = length;
     }
-
+    
     /**
      * Adds a traffic participant to the lane.
-     *
+     * 
      * @param tp The traffic participant.
      * @param pos The position.
      * @return True if {@link #canAdd()} is true, that is if there is no traffic
@@ -40,7 +40,7 @@ public class TPList implements Iterable<TrafficParticipant>{
             throw new NullPointerException("You cannot add null to a TPList");
         }
         if(canAdd()) {
-            TPNode toAdd = new TPNode(tp, Math.min(last.pos - 1, pos));
+            TPNode toAdd = new TPNode(tp, Math.min(last == null ? pos : last.pos - 1, pos));
             if(first == null) {
                 first = toAdd;
                 last = first;
@@ -54,10 +54,10 @@ public class TPList implements Iterable<TrafficParticipant>{
         }
         return false;
     }
-
+    
     /**
      * Adds a traffic participant to the lane.
-     *
+     * 
      * @param tp The traffic participant.
      * @return True if {@link #canAdd()} is true, that is if there is no traffic
      * participant at position 0 or below.
@@ -68,7 +68,7 @@ public class TPList implements Iterable<TrafficParticipant>{
             throw new NullPointerException("You cannot add null to a TPList");
         }
         if(canAdd()) {
-            TPNode toAdd = new TPNode(tp, last.pos - 1);
+            TPNode toAdd = new TPNode(tp, last == null ? 0 : last.pos - 1);
             if(first == null) {
                 first = toAdd;
                 last = first;
@@ -82,10 +82,10 @@ public class TPList implements Iterable<TrafficParticipant>{
         }
         return false;
     }
-
+    
     /**
      * Adds a traffic participant to the lane.
-     *
+     * 
      * @param tps The traffic participants.
      * @throws NullPointerException is thrown if a traffic participant is null.
      */
@@ -94,10 +94,10 @@ public class TPList implements Iterable<TrafficParticipant>{
             add(tp);
         }
     }
-
+    
     /**
      * Adds a traffic participant to the lane.
-     *
+     * 
      * @param tps The traffic participants.
      * @throws NullPointerException is thrown if a traffic participant is null.
      */
@@ -129,7 +129,7 @@ public class TPList implements Iterable<TrafficParticipant>{
         size--;
         return true;
     }
-
+    
     /**
      * Removes a traffic participant if it is within the list and returns true
      * if this was successful.
@@ -138,9 +138,9 @@ public class TPList implements Iterable<TrafficParticipant>{
     public void removeAll(TrafficParticipant... tps) {
         for(TrafficParticipant tp : tps) {
             remove(tp);
-        }
+        } 
     }
-
+    
     /**
      * Removes a traffic participant if it is within the list and returns true
      * if this was successful.
@@ -149,9 +149,9 @@ public class TPList implements Iterable<TrafficParticipant>{
     public void removeAll(Collection<TrafficParticipant> tps) {
         for(TrafficParticipant tp : tps) {
             remove(tp);
-        }
+        } 
     }
-
+    
     /**
      * Replaces one traffic participant with another.
      * @param tp0 The traffic participant, which will be replaced.
@@ -171,7 +171,7 @@ public class TPList implements Iterable<TrafficParticipant>{
         }
         return false;
     }
-
+    
     private void detachNode(TPNode node) {
         if(node == null) {
             return;
@@ -179,7 +179,7 @@ public class TPList implements Iterable<TrafficParticipant>{
         node.prev.next = node.next;
         node.next.prev = node.prev;
     }
-
+    
     /**
      * Returns true if the traffic participant has been found within the
      * list.
@@ -189,17 +189,17 @@ public class TPList implements Iterable<TrafficParticipant>{
     public boolean contains(TrafficParticipant tp) {
         return find(tp) != null;
     }
-
+    
     private TPNode find(TrafficParticipant tp) {
         for(Iterator<TPNode> iterator = getNodeIterator(); iterator.hasNext();) {
             TPNode cur = iterator.next();
-            if(cur.tp.equals(tp)) {
+            if(cur.tp.equals(tp) || tp == cur.tp) {
                 return cur;
             }
         }
         return null;
     }
-
+    
     /**
      * Removes all traffic participants, that have finished and moves all
      * others forward.
@@ -208,7 +208,7 @@ public class TPList implements Iterable<TrafficParticipant>{
         removeFinished();
         moveParticipants();
     }
-
+    
     private void removeFinished() {
         TPNode cur;
         for(Iterator<TPNode> iterator = getNodeIterator(); iterator.hasNext();) {
@@ -218,12 +218,12 @@ public class TPList implements Iterable<TrafficParticipant>{
             }
         }
     }
-
+    
     private Iterator<TPNode> getNodeIterator() {
         return new Iterator<TPNode>() {
-
-            private TPNode next = first.deepCopy();
-
+            
+            private TPNode next = first == null ? null : first.deepCopy();
+            
             @Override
             public boolean hasNext() {
                 return next != null;
@@ -232,25 +232,25 @@ public class TPList implements Iterable<TrafficParticipant>{
             @Override
             public TPNode next() {
                 TPNode cur;
-
+                
                 cur = next;
                 next = next.next;
-
+                
                 return cur;
             }
         };
     }
-
+    
     public int getSize() {
         return size;
     }
-
+    
     @Override
     public Iterator<TrafficParticipant> iterator() {
         return new Iterator<TrafficParticipant>() {
-
+            
             private final Iterator<TPNode> nodeIterator = getNodeIterator();
-
+            
             @Override
             public boolean hasNext() {
                 return nodeIterator.hasNext();
@@ -262,7 +262,7 @@ public class TPList implements Iterable<TrafficParticipant>{
             }
         };
     }
-
+    
     private void moveParticipants() {
         for(Iterator<TPNode> iterator = getNodeIterator(); iterator.hasNext();) {
             TPNode cur = iterator.next();
@@ -288,16 +288,16 @@ public class TPList implements Iterable<TrafficParticipant>{
             }
         }
     }
-
+    
     /**
      * Checks wether it is possible to add another traffic participant to this
      * lane.
      * @return True if there is no traffic participant at position 0.
      */
     public boolean canAdd() {
-        return last.pos > 0;
+        return last == null || last.pos > 0;
     }
-
+    
     private class TPNode {
         private TrafficParticipant tp;
         private int pos;
@@ -307,14 +307,14 @@ public class TPList implements Iterable<TrafficParticipant>{
             this.tp = tp;
             this.pos = pos;
         }
-
+        
         private TPNode deepCopy() {
             TPNode copy = new TPNode(tp, pos);
             copyPrev(this, copy);
             copyNext(this, copy);
             return copy;
         }
-
+        
         private void copyPrev(TPNode cur, TPNode copy) {
             if(cur.prev != null) {
                 copy.prev = new TPNode(cur.prev.tp, cur.prev.pos);
@@ -322,7 +322,7 @@ public class TPList implements Iterable<TrafficParticipant>{
                 copyPrev(cur.prev, copy.prev);
             }
         }
-
+        
         private void copyNext(TPNode cur, TPNode copy) {
             if(cur.next != null) {
                 copy.next = new TPNode(cur.next.tp, cur.next.pos);
