@@ -3,7 +3,11 @@ package trafficControlAndDetection;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -19,37 +23,68 @@ import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.WindowConstants;
 
+import controlsystem.ControlSystem;
+import controlsystem.model.GraphPart;
+import controlsystem.model.Node;
+import trafficControlAndDetection.Actuator.State;
+
 public class TrafficControlAndDetection {
-
-	private ControlSystemInterface comms = new ControlSystemInterface();
-	List<Sensor> sensors = new ArrayList<Sensor>();
-	List<Actuator> actuators = new ArrayList<Actuator>();
-
-	private void detectParticipants() {
-
+	private ControlSystem controller;
+	private ControlSystemInterface comms;
+	List<Sensor> sensors;
+	List<Actuator> actuators;
+	ScheduledExecutorService exec;
+	
+	public TrafficControlAndDetection(ControlSystem controller) {
+		this.controller = controller;
+		comms = new ControlSystemInterface(controller, this);
+		sensors = new ArrayList<Sensor>();
+		actuators = new ArrayList<Actuator>();
+		exec = new ScheduledThreadPoolExecutor(5);
 	}
 
-	private void transmitParticipantData() {
-
+	private HashMap<GraphPart, Integer> detectParticipants() {
+		HashMap<GraphPart, Integer> results = new HashMap<GraphPart, Integer>();
+		for (Sensor s : sensors) {
+			results.put(s.getLocation(), s.getData());
+		}
+		return results;
+	}
+	
+	public ControlSystemInterface getInterface(){
+		return comms;
 	}
 
-	private void executeCommand(String command) {
+	void receiveCommand(Command command) {
+		if (command.kind == Command.Kind.getData) {
+			transmitParticipantData(detectParticipants());
+		} else if (command.kind == Command.Kind.setState) {
+			for (Actuator a : actuators) {
+				if (a.id == command.target_id) {
+					if (a instanceof TrafficLight && command.state >= 0
+							&& command.state < TrafficLight.TrafficLightState.values().length) {
+						executeCommand(a, TrafficLight.TrafficLightState.values()[command.state]);
+					} else if (a instanceof TrafficSign && command.state >= 0
+							&& command.state < TrafficSign.TrafficSignState.values().length) {
+						executeCommand(a, TrafficSign.TrafficSignState.values()[command.state]);
+					}
+				}
+			}
+		}
+	}
 
+	private void transmitParticipantData(HashMap<GraphPart, Integer> map) {
+		comms.sendData(map);
+	}
+
+	private void executeCommand(Actuator device, State nextState) {
+		device.setSignal(nextState);
 	}
 
 	private void makeGUI() {
 		// create simple GUI
 		JFrame frame = new JFrame("Traffic Control and Detection - Device Management");
 		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-
-		actuators.add(new TrafficSign("Stop", "Main street"));
-		actuators.add(new TrafficLight("North-South", "Main street"));
-		actuators.add(new TrafficLight("West-East", "Main street"));
-		actuators.add(new TrafficLight("Pedestrian", "Main street"));
-
-		sensors.add(new Camera("North", "Main street"));
-		sensors.add(new Camera("Traffic", "Main street"));
-		sensors.add(new InductionLoop("Traffic", "City boulevard"));
 
 		final JList<Actuator> actuatorList = new JList<Actuator>();
 		ActuatorListModel actuatorListModel = new ActuatorListModel(actuators);
@@ -78,8 +113,8 @@ public class TrafficControlAndDetection {
 			} else {
 				listPanel.remove(actuatorList);
 				listPanel.add(sensorList);
-				
 			}
+
 			listPanel.validate();
 			listPanel.repaint();
 			scrollpane.validate();
@@ -188,15 +223,16 @@ public class TrafficControlAndDetection {
 
 		int res = JOptionPane.showConfirmDialog(null, fields, "New Device", JOptionPane.PLAIN_MESSAGE);
 		if (res == JOptionPane.OK_OPTION) {
+			// create the correct device, using dummy data for the node
 			switch (typeBox.getSelectedIndex()) {
 			case 0:
-				return new Camera(name.getText(), location.getText());
+				return new Camera(name.getText(), new Node(0, 0, 0), location.getText());
 			case 1:
-				return new InductionLoop(name.getText(), location.getText());
+				return new InductionLoop(name.getText(), new Node(0, 0, 0), location.getText());
 			case 2:
-				return new TrafficSign(name.getText(), location.getText());
+				return new TrafficSign(name.getText(), new Node(0, 0, 0), location.getText());
 			case 3:
-				return new TrafficLight(name.getText(), location.getText());
+				return new TrafficLight(name.getText(), new Node(0, 0, 0), location.getText());
 			default:
 				return null;
 			}
@@ -207,7 +243,7 @@ public class TrafficControlAndDetection {
 
 	private Device editActuatorDialog(Actuator toEdit) {
 		JTextField name = new JTextField(toEdit.name);
-		JTextField location = new JTextField(toEdit.location);
+		JTextField location = new JTextField(toEdit.locationName);
 
 		JComponent[] fields = new JComponent[] { new JLabel("Device to edit:"), new JLabel(toEdit.toString()),
 				new JLabel("Name:"), name, new JLabel("Location"), location };
@@ -215,7 +251,7 @@ public class TrafficControlAndDetection {
 		int res = JOptionPane.showConfirmDialog(null, fields, "New Device", JOptionPane.PLAIN_MESSAGE);
 		if (res == JOptionPane.OK_OPTION) {
 			toEdit.name = name.getText();
-			toEdit.location = location.getText();
+			toEdit.locationName = location.getText();
 		}
 
 		return toEdit;
@@ -223,7 +259,7 @@ public class TrafficControlAndDetection {
 
 	private Device editSensorDialog(Sensor toEdit) {
 		JTextField name = new JTextField(toEdit.name);
-		JTextField location = new JTextField(toEdit.location);
+		JTextField location = new JTextField(toEdit.locationName);
 
 		JComponent[] fields = new JComponent[] { new JLabel("Sensor to edit:"), new JLabel(toEdit.toString()),
 				new JLabel("Name:"), name, new JLabel("Location"), location };
@@ -231,7 +267,7 @@ public class TrafficControlAndDetection {
 		int res = JOptionPane.showConfirmDialog(null, fields, "Editing Sensor", JOptionPane.PLAIN_MESSAGE);
 		if (res == JOptionPane.OK_OPTION) {
 			toEdit.name = name.getText();
-			toEdit.location = location.getText();
+			toEdit.locationName = location.getText();
 		}
 
 		return toEdit;
@@ -255,9 +291,45 @@ public class TrafficControlAndDetection {
 		JOptionPane.showMessageDialog(null, fields, "Status of device", JOptionPane.PLAIN_MESSAGE);
 	}
 
-	public static void main(String[] args) {
-		TrafficControlAndDetection sys = new TrafficControlAndDetection();
-		sys.makeGUI();
+	void init() {
+		// add some test data
+		actuators.add(new TrafficSign("Stop", new Node(0, 0, 0), "Main street"));
+		actuators.add(new TrafficLight("North-South", new Node(0, 0, 0), "Main street"));
+		actuators.add(new TrafficLight("West-East", new Node(0, 0, 0), "Main street"));
+		actuators.add(new TrafficLight("Pedestrian", new Node(0, 0, 0), "Main street"));
+
+		sensors.add(new Camera("North", new Node(0, 0, 0), "Main street"));
+		sensors.add(new Camera("Traffic", new Node(0, 0, 0), "Main street"));
+		sensors.add(new InductionLoop("Traffic", new Node(0, 0, 0), "City boulevard"));
+
+		this.makeGUI();
+
+		// check for participants and transmit the data to control system, do
+		// this every 5 secs
+		this.exec.scheduleAtFixedRate(() -> {
+			transmitParticipantData(detectParticipants());
+		} , 5, 5, TimeUnit.SECONDS);
+
+		// traffic lights can dynamically change because participants press the
+		// respective buttons on them
+		this.exec.scheduleAtFixedRate(() -> {
+			int target = (int) (Math.random() * actuators.size());
+			if (actuators.get(target) instanceof TrafficLight
+					&& ((TrafficLight) actuators.get(target)).getState() == TrafficLight.TrafficLightState.GREEN) {
+				((TrafficLight) actuators.get(target)).setSignal(TrafficLight.TrafficLightState.RED);
+				try {
+					wait(3500);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				((TrafficLight) actuators.get(target)).setSignal(TrafficLight.TrafficLightState.GREEN);
+			}
+		} , 2500, 2500, TimeUnit.MILLISECONDS);
+
 	}
 
+	public static void main(String[] args) {
+		TrafficControlAndDetection sys = new TrafficControlAndDetection(null);
+		sys.init();
+	}
 }

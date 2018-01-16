@@ -1,16 +1,29 @@
 package trafficControlAndDetection;
 
-public class ControlSystemInterface {
+import java.util.HashMap;
 
-	void sendData() {
-		
+import controlsystem.ControlSystem;
+import controlsystem.model.GraphPart;
+
+public class ControlSystemInterface {
+	TrafficControlAndDetection tcontrol;
+	ControlSystem commInterface;
+	
+	
+	public ControlSystemInterface(ControlSystem commInterface, TrafficControlAndDetection tcontrol) {
+		this.commInterface = commInterface;
+		this.tcontrol = tcontrol;
 	}
 	
-	String receiveCommand() {
-		return "";
+	void sendData(HashMap<GraphPart, Integer> map) {
+		map.keySet().forEach(x -> commInterface.updateParticipantCount(x.getId(), map.get(x)));
+	}
+	
+	public void receiveCommand(Command c){
+		tcontrol.receiveCommand(c);
 	}
 	
 	void sendErrorReport() {
-		
+		//TODO (not a selected feature)
 	}
 }

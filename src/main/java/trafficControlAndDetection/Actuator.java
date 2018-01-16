@@ -1,25 +1,29 @@
 package trafficControlAndDetection;
 
-public abstract class Actuator implements Device {
-	protected String name;
-	protected String location;
+public abstract class Actuator extends Device {
+	private State state;
 	
-	private int state;
+	public Actuator() {
+		super();
+	}
 	
-	abstract void setSignal(int state);
+	interface State {
+	}
+	
+	abstract void setSignal(State state);
 	
 	abstract void tryErrorRoutine();
 
-	public int getState() {
+	public State getState() {
 		return state;
 	}
 
-	public void setState(int state) {
+	public void setState(State state) {
 		this.state = state;
 	}
 	
 	@Override
 	public String toString() {
-		return this.name + " " + this.location;
+		return this.name + " " + this.locationName;
 	}
 }

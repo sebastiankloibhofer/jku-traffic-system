@@ -1,13 +1,22 @@
 package trafficControlAndDetection;
 
-public abstract class Sensor implements Device {
-	protected String name;
-	protected String location;
+import controlsystem.model.GraphPart;
+
+public abstract class Sensor extends Device {	
 	
-	abstract String getData();
+	public Sensor() {
+		super();
+	}
+	
+	//returns the amount of participants that are currently in view of the sensor
+	abstract public int getData();
 	
 	@Override
 	public String toString() {
-		return this.name + " " + this.location;
+		return this.name + " " + this.locationName;
+	}
+	
+	public GraphPart getLocation() {
+		return location;
 	}
 }

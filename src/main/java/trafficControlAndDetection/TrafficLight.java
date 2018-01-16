@@ -1,29 +1,38 @@
 package trafficControlAndDetection;
 
+import controlsystem.model.GraphPart;
+
 public class TrafficLight extends Actuator {
+	public static enum TrafficLightState implements State {
+		GREEN,
+		YELLOW,
+		RED,
+		RED_YELLOW,
+		YELLOW_BLINK,
+		ERROR
+	}
 	
-	public TrafficLight(String name, String location) {
+	public TrafficLight(String name, GraphPart location, String locationName) {
+		super();
 		this.name = name;
+		this.locationName = locationName;
 		this.location = location;
-		this.setState(0);
+		this.setState(TrafficLightState.YELLOW_BLINK);
 	}
 	
 	@Override
 	public boolean isFunctional() {
-		// TODO Auto-generated method stub
-		return false;
+		return this.getState() != TrafficLightState.ERROR;
 	}
 
 	@Override
-	void setSignal(int state) {
-		// TODO Auto-generated method stub
-		
+	void setSignal(State state) {
+		super.setState(state);
 	}
 
 	@Override
 	void tryErrorRoutine() {
-		// TODO Auto-generated method stub
-
+		this.setSignal(TrafficLightState.YELLOW_BLINK);
 	}
 
 	public String toString() {

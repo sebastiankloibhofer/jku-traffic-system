@@ -1,29 +1,40 @@
 package trafficControlAndDetection;
 
-public class TrafficSign extends Actuator {
+import controlsystem.model.GraphPart;
 
-	public TrafficSign(String name, String location) {
+public class TrafficSign extends Actuator {
+	public static enum TrafficSignState implements State {
+		ATTENTION,
+		SPEED_30,
+		SPEED_50,
+		SPEED_80,
+		SPEED_100,
+		CONSTRUCTION,
+		NONE,
+		ERROR
+	}
+	
+	public TrafficSign(String name, GraphPart location, String locationName) {
+		super();
 		this.name = name;
+		this.locationName = locationName;
 		this.location = location;
-		this.setState(0);
+		this.setState(TrafficSignState.NONE);
 	}
 	
 	@Override
 	public boolean isFunctional() {
-		// TODO Auto-generated method stub
-		return false;
+		return this.getState() != TrafficSignState.ERROR;
 	}
 
 	@Override
-	void setSignal(int state) {
-		// TODO Auto-generated method stub
-
+	void setSignal(State state) {
+		super.setState(state);
 	}
 
 	@Override
 	void tryErrorRoutine() {
-		// TODO Auto-generated method stub
-
+		this.setSignal(TrafficSignState.ATTENTION);
 	}
 
 	public String toString() {
