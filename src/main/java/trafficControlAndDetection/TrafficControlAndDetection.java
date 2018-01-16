@@ -43,7 +43,7 @@ public class TrafficControlAndDetection {
 		exec = new ScheduledThreadPoolExecutor(5);
 	}
 
-	private HashMap<GraphPart, Integer> detectParticipants() {
+	HashMap<GraphPart, Integer> detectParticipants() {
 		HashMap<GraphPart, Integer> results = new HashMap<GraphPart, Integer>();
 		for (Sensor s : sensors) {
 			results.put(s.getLocation(), s.getData());
@@ -55,20 +55,27 @@ public class TrafficControlAndDetection {
 		return comms;
 	}
 
-	void receiveCommand(Command command) {
+	void receiveCommand(Command command) throws UnsupportedOperationException {
 		if (command.kind == Command.Kind.getData) {
 			transmitParticipantData(detectParticipants());
 		} else if (command.kind == Command.Kind.setState) {
-			for (Actuator a : actuators) {
+			boolean success = false;
+			for (Actuator a : actuators) { //search for the target device, set the new state
 				if (a.id == command.target_id) {
 					if (a instanceof TrafficLight && command.state >= 0
 							&& command.state < TrafficLight.TrafficLightState.values().length) {
 						executeCommand(a, TrafficLight.TrafficLightState.values()[command.state]);
+						success = true;
 					} else if (a instanceof TrafficSign && command.state >= 0
 							&& command.state < TrafficSign.TrafficSignState.values().length) {
 						executeCommand(a, TrafficSign.TrafficSignState.values()[command.state]);
+						success = true;
 					}
 				}
+			}
+			
+			if (!success) {
+				throw new UnsupportedOperationException("Cannot set state of a sensor.");
 			}
 		}
 	}
@@ -318,7 +325,7 @@ public class TrafficControlAndDetection {
 					&& ((TrafficLight) actuators.get(target)).getState() == TrafficLight.TrafficLightState.GREEN) {
 				((TrafficLight) actuators.get(target)).setSignal(TrafficLight.TrafficLightState.RED);
 				try {
-					wait(3500);
+					Thread.sleep(3500);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -327,7 +334,11 @@ public class TrafficControlAndDetection {
 		} , 2500, 2500, TimeUnit.MILLISECONDS);
 
 	}
-
+	
+	void shutdown() {
+		exec.shutdown();
+	}
+	
 	public static void main(String[] args) {
 		TrafficControlAndDetection sys = new TrafficControlAndDetection(null);
 		sys.init();

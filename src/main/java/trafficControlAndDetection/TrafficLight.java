@@ -17,7 +17,7 @@ public class TrafficLight extends Actuator {
 		this.name = name;
 		this.locationName = locationName;
 		this.location = location;
-		this.setState(TrafficLightState.YELLOW_BLINK);
+		this.setState(TrafficLightState.GREEN);
 	}
 	
 	@Override

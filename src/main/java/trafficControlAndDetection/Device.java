@@ -7,7 +7,7 @@ abstract class Device {
 	protected String locationName;
 	protected GraphPart location;
 	protected int id;
-	private static int nextId = 1;
+	private static int nextId = 0;
 	
 	public Device() {
 		this.id = nextId;

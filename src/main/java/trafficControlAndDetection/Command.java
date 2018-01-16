@@ -1,7 +1,7 @@
 package trafficControlAndDetection;
 
 public class Command {
-	enum Kind{
+	enum Kind {
 		getData, setState
 	}
 	Kind kind;
