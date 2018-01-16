@@ -21,6 +21,7 @@ public class SensorTest {
 		assert(cam.getData() >= 0);
 	}
 	
+	@Test
 	public void testInductionLoop() {
 		assert(loop.getData() >= 0);
 	}

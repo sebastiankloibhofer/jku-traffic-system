@@ -26,12 +26,12 @@ public class TrafficLight extends Actuator {
 	}
 
 	@Override
-	void setSignal(State state) {
+	protected void setSignal(State state) {
 		super.setState(state);
 	}
 
 	@Override
-	void tryErrorRoutine() {
+	protected void tryErrorRoutine() {
 		this.setSignal(TrafficLightState.YELLOW_BLINK);
 	}
 

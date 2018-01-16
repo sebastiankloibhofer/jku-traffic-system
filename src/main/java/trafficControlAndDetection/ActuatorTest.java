@@ -24,6 +24,7 @@ public class ActuatorTest {
 		assert(light.getState() == TrafficLight.TrafficLightState.YELLOW_BLINK);
 	}
 	
+	@Test
 	public void testTrafficSign() {
 		assert(sign.getState() == TrafficSign.TrafficSignState.NONE);
 		sign.setSignal(TrafficSign.TrafficSignState.SPEED_50);
@@ -31,5 +32,4 @@ public class ActuatorTest {
 		sign.tryErrorRoutine();
 		assert(sign.getState() == TrafficSign.TrafficSignState.ATTENTION);
 	}
-
 }

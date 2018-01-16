@@ -4,6 +4,7 @@ public class Command {
 	enum Kind {
 		getData, setState
 	}
+	
 	Kind kind;
 	int target_id;
 	int state;

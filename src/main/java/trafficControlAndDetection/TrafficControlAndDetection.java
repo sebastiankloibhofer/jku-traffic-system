@@ -29,38 +29,38 @@ import controlsystem.model.Node;
 import trafficControlAndDetection.Actuator.State;
 
 public class TrafficControlAndDetection {
-	private ControlSystem controller;
 	private ControlSystemInterface comms;
 	List<Sensor> sensors;
 	List<Actuator> actuators;
 	ScheduledExecutorService exec;
-	
+
 	public TrafficControlAndDetection(ControlSystem controller) {
-		this.controller = controller;
 		comms = new ControlSystemInterface(controller, this);
 		sensors = new ArrayList<Sensor>();
 		actuators = new ArrayList<Actuator>();
 		exec = new ScheduledThreadPoolExecutor(5);
 	}
 
-	HashMap<GraphPart, Integer> detectParticipants() {
+	protected HashMap<GraphPart, Integer> detectParticipants() {
 		HashMap<GraphPart, Integer> results = new HashMap<GraphPart, Integer>();
 		for (Sensor s : sensors) {
 			results.put(s.getLocation(), s.getData());
 		}
 		return results;
 	}
-	
-	public ControlSystemInterface getInterface(){
+
+	public ControlSystemInterface getInterface() {
 		return comms;
 	}
+	
 
-	void receiveCommand(Command command) throws UnsupportedOperationException {
+	protected void receiveCommand(Command command) throws UnsupportedOperationException {
 		if (command.kind == Command.Kind.getData) {
 			transmitParticipantData(detectParticipants());
 		} else if (command.kind == Command.Kind.setState) {
 			boolean success = false;
-			for (Actuator a : actuators) { //search for the target device, set the new state
+			for (Actuator a : actuators) { // search for the target device, set
+											// the new state
 				if (a.id == command.target_id) {
 					if (a instanceof TrafficLight && command.state >= 0
 							&& command.state < TrafficLight.TrafficLightState.values().length) {
@@ -73,7 +73,7 @@ public class TrafficControlAndDetection {
 					}
 				}
 			}
-			
+
 			if (!success) {
 				throw new UnsupportedOperationException("Cannot set state of a sensor.");
 			}
@@ -298,7 +298,7 @@ public class TrafficControlAndDetection {
 		JOptionPane.showMessageDialog(null, fields, "Status of device", JOptionPane.PLAIN_MESSAGE);
 	}
 
-	void init() {
+	protected void init() {
 		// add some test data
 		actuators.add(new TrafficSign("Stop", new Node(0, 0, 0), "Main street"));
 		actuators.add(new TrafficLight("North-South", new Node(0, 0, 0), "Main street"));
@@ -334,11 +334,11 @@ public class TrafficControlAndDetection {
 		} , 2500, 2500, TimeUnit.MILLISECONDS);
 
 	}
-	
-	void shutdown() {
+
+	protected void shutdown() {
 		exec.shutdown();
 	}
-	
+
 	public static void main(String[] args) {
 		TrafficControlAndDetection sys = new TrafficControlAndDetection(null);
 		sys.init();

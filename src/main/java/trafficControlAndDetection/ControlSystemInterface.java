@@ -15,15 +15,15 @@ public class ControlSystemInterface {
 		this.tcontrol = tcontrol;
 	}
 	
-	void sendData(HashMap<GraphPart, Integer> map) {
-		map.keySet().forEach(x -> commInterface.updateParticipantCount(x.getId(), map.get(x)));
-	}
-	
 	public void receiveCommand(Command c){
 		tcontrol.receiveCommand(c);
 	}
 	
-	void sendErrorReport() {
+	protected void sendData(HashMap<GraphPart, Integer> map) {
+		map.keySet().forEach(x -> commInterface.updateParticipantCount(x.getId(), map.get(x)));
+	}
+	
+	protected void sendErrorReport() {
 		//TODO (not a selected feature)
 	}
 }
