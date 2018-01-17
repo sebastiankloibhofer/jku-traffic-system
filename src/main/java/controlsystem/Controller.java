@@ -4,16 +4,12 @@ import controlsystem.model.Edge;
 import controlsystem.model.Node;
 import controlsystem.model.Route;
 import controlsystem.persistence.ArchiveStore;
-import controlsystem.persistence.Repository;
-import controlsystem.persistence.RepositoryFactory;
 import controlsystem.scheduling.RoutePlanner;
 import controlsystem.util.Tuple.T2;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -222,12 +218,12 @@ public class Controller implements RoutingControl, ControlSystem {
         Controller con  = new Controller(c, l, null);
         con.init();
 
-        Repository rep = RepositoryFactory.getArchiveRepository();
-
-        rep.saveNodes(crossings);
-        rep.saveEdges(lanes);
-
-        System.out.println("AVG: " + rep.calcAvgCapacity(l0, Instant.now().minus(5, ChronoUnit.DAYS), Instant.now()));
+//        Repository rep = RepositoryFactory.getArchiveRepository();
+//
+//        rep.saveNodes(crossings);
+//        rep.saveEdges(lanes);
+//
+//        System.out.println("AVG: " + rep.calcAvgCapacity(l0, Instant.now().minus(5, ChronoUnit.DAYS), Instant.now()));
 
         try {
             Thread.sleep(5000);
