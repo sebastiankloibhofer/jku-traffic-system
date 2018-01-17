@@ -1,16 +1,18 @@
 package controlsystem.model;
 
-import com.sun.deploy.util.StringUtils;
 import trafficParticipants.street.Crossing;
 import trafficParticipants.street.Lane;
 
 import javax.persistence.*;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static java.time.Instant.now;
 import static javax.persistence.FetchType.EAGER;
+import static javax.persistence.GenerationType.AUTO;
 
 /**
  * Represents a calculated route between two crossings.
@@ -19,17 +21,31 @@ import static javax.persistence.FetchType.EAGER;
 @Table(name = "routes")
 public class Route {
 
+    @Id
+    @Column(name = "id")
+    @GeneratedValue(strategy = AUTO)
+    private long id;
+
     @ManyToMany(fetch = EAGER)
-    @JoinTable(name = "route_lanes")
+    @JoinTable(
+            name = "route_lanes",
+            joinColumns = @JoinColumn(name = "route_id"),
+            inverseJoinColumns = @JoinColumn(name = "lane_id"))
     private List<Lane> lanes;
 
     @ManyToOne(fetch = EAGER)
-    @JoinColumn(name = "start", nullable = false)
+    @JoinColumn(name = "start_id", nullable = false)
     private Crossing start;
 
     @ManyToOne(fetch = EAGER)
-    @JoinColumn(name = "end", nullable = false)
+    @JoinColumn(name = "end_id", nullable = false)
     private Crossing end;
+
+    @Column(name = "created_at")
+    private Instant created;
+
+    @Column(name = "modified_at")
+    private Instant modified;
 
     public Route(List<Lane> lanes) {
         if (lanes.isEmpty())
@@ -38,6 +54,9 @@ public class Route {
         this.lanes = Collections.unmodifiableList(lanes);
         start = lanes.get(0).getStart();
         end = lanes.get(lanes.size() - 1).getEnd();
+
+        this.created = now();
+        this.modified = now();
     }
 
     public Route(Lane... lanes) {
@@ -62,7 +81,15 @@ public class Route {
     public String toString() {
 
         return "Route from " + start + " to " + end + ":" + System.lineSeparator() +
-                StringUtils.join(this.lanes.stream().map(Lane::toString).collect(Collectors.toList()), System.lineSeparator());
+                this.lanes.stream().map(Lane::toString).collect(Collectors.joining(System.lineSeparator()));
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public List<Lane> getLanes() {
@@ -87,5 +114,21 @@ public class Route {
 
     private void setEnd(Crossing end) {
         this.end = end;
+    }
+
+    public Instant getCreated() {
+        return created;
+    }
+
+    private void setCreated(Instant created) {
+        this.created = created;
+    }
+
+    public Instant getModified() {
+        return modified;
+    }
+
+    private void setModified(Instant modified) {
+        this.modified = modified;
     }
 }

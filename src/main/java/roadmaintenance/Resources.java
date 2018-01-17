@@ -1,4 +1,4 @@
-package main.java.roadmaintenance;
+package roadmaintenance;
 
 public class Resources {
 

@@ -1,32 +1,26 @@
-package participant;
+package trafficParticipants.participant;
 
-import java.util.ArrayDeque;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.PriorityQueue;
-import java.util.Queue;
-import java.util.Set;
-import java.util.Stack;
-import street.Lane;
+import trafficParticipants.street.Lane;
+
+import java.util.*;
 
 /**
  *
  * @author Christoph Kroell
  */
 public class TPPath {
-    
+
     public static Queue<Lane> get(Lane start, Lane goal) {
         Queue<LaneNode> open;
         Set<Lane> closed;
         Queue<Lane> path;
         LaneNode cur;
-        
+
         path = new ArrayDeque<>();
         open = new PriorityQueue<>();
         closed = new HashSet<>();
         cur = new LaneNode(start, goal);
-        
+
         open.add(cur);
         while(cur != null && !cur.lane.equals(goal) && !cur.lane.getTwins().contains(goal) && !cur.lane.getInverseTwins().contains(goal)) {
             for(Lane next : cur.lane.getEnd().getOut()) {
@@ -42,14 +36,14 @@ public class TPPath {
             temp.add(cur.lane);
             cur = cur.parent;
         }
-        
+
         while(!temp.isEmpty()) {
             path.add(temp.pop());
         }
-        
+
         return path;
     }
-    
+
     private static class LaneNode implements Comparable<LaneNode>{
         private final Lane lane, goal;
         private LaneNode parent;
@@ -58,7 +52,7 @@ public class TPPath {
         public LaneNode(Lane lane, Lane goal) {
             this(lane, goal, null);
         }
-        
+
         public LaneNode(Lane lane, Lane goal, LaneNode parent) {
             this.goal = goal;
             this.lane = lane;
@@ -89,14 +83,14 @@ public class TPPath {
             }
             return true;
         }
-        
+
         private int length() {
             if(length != -1) {
                 return length;
             }
             LaneNode cur;
             int length;
-            
+
             length = 0;
             cur = this;
             while(cur != null) {

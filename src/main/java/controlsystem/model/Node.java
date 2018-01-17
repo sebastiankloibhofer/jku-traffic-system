@@ -33,6 +33,10 @@ public class Node extends Crossing implements GraphPart {
     public static final int MAX_RADIUS = 10;
     public static final int MIN_RADIUS = 1;
 
+    protected Node() {
+        super();
+    }
+
     public Node(int id, int x, int y) {
         super(id, x, y);
     }

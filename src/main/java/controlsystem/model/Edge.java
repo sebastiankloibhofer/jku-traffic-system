@@ -44,16 +44,23 @@ public class Edge extends Lane implements GraphPart {
     /**
      * Total length of the lane in metres.
      */
-    private double length;
+    private double metres;
 
     private int nParticipants;
 
     private Instant created;
     private Instant modified;
 
-    public Edge(Node start, Node end, double length) {
+    /**
+     * No-args constructor for Hibernate
+     */
+    protected Edge() {
+        super();
+    }
+
+    public Edge(Node start, Node end, double metres) {
         super(start, end);
-        this.length = length;
+        this.metres = metres;
         this.created = now();
         this.modified = now();
     }
@@ -83,8 +90,9 @@ public class Edge extends Lane implements GraphPart {
      *
      * @return a percentage of the lane that is already occupied
      */
+    @Transient
     public double getUsageLevel() {
-        return nParticipants * AVG_CAR_LENGTH / length;
+        return nParticipants * AVG_CAR_LENGTH / metres;
     }
 
     public final int fromX() {
@@ -117,8 +125,10 @@ public class Edge extends Lane implements GraphPart {
         final int b = (int) (B_OFFSET * factor);
         final int a = (int) (A_OFFSET * (1 - factor));
 
-        return new Color(r, g, b, 100);
+        return new Color(r, g, b, a);
     }
+
+
 
     @Override
     @Id
@@ -131,15 +141,30 @@ public class Edge extends Lane implements GraphPart {
     @Override
     @ManyToOne(fetch = EAGER)
     @JoinColumn(name = "start_id", nullable = false)
-    public Crossing getStart() {
-        return super.getStart();
+    public Node getStart() {
+        return (Node) super.getStart();
+    }
+
+    @Override
+    protected void setId(int id) {
+        super.setId(id);
+    }
+
+    @Override
+    protected void setStart(Crossing start) {
+        super.setStart(start);
+    }
+
+    @Override
+    protected void setEnd(Crossing end) {
+        super.setEnd(end);
     }
 
     @Override
     @ManyToOne(fetch = EAGER)
     @JoinColumn(name = "end_id", nullable = false)
-    public Crossing getEnd() {
-        return super.getEnd();
+    public Node getEnd() {
+        return (Node) super.getEnd();
     }
 
     @Override
@@ -164,11 +189,6 @@ public class Edge extends Lane implements GraphPart {
         super.setMaxSpeed(maxSpeed);
     }
 
-    @Override
-    public int[] getStreetUnitState() {
-        return super.getStreetUnitState();
-    }
-
     @Column(name = "blocked", nullable = false)
     public boolean isBlocked() {
         return blocked;
@@ -179,12 +199,12 @@ public class Edge extends Lane implements GraphPart {
     }
 
     @Column(name = "length", nullable = false)
-    private void setLength(double length) {
-        this.length = length;
+    private void setMetres(double metres) {
+        this.metres = metres;
     }
 
-    public double getLength() {
-        return length;
+    public double getMetres() {
+        return metres;
     }
 
     @Column(name = "participant_count", nullable = false)

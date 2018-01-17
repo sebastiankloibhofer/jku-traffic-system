@@ -4,12 +4,16 @@ import controlsystem.model.Edge;
 import controlsystem.model.Node;
 import controlsystem.model.Route;
 import controlsystem.persistence.ArchiveStore;
+import controlsystem.persistence.Repository;
+import controlsystem.persistence.RepositoryFactory;
 import controlsystem.scheduling.RoutePlanner;
 import controlsystem.util.Tuple.T2;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -216,19 +220,25 @@ public class Controller implements RoutingControl, ControlSystem {
                 .collect(Collectors.toConcurrentMap(Node::getId, Function.identity()));
 
         Controller con  = new Controller(c, l, null);
-        con.init();
+//        con.init();
 
+        Repository rep = RepositoryFactory.getArchiveRepository();
 
-        try {
-            Thread.sleep(5000);
-            Edge lane = con.lanes.get(1);
+        rep.saveNodes(crossings);
+        rep.saveEdges(lanes);
 
-            System.out.println("Blocking lane " + lane);
-            lane.setBlocked(true);
-            con.graph.repaint();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        System.out.println("AVG: " + rep.calcAvgCapacity(l0, Instant.now().minus(5, ChronoUnit.DAYS), Instant.now()));
+
+//        try {
+//            Thread.sleep(5000);
+//            Edge lane = con.lanes.get(1);
+//
+//            System.out.println("Blocking lane " + lane);
+//            lane.setBlocked(true);
+//            con.graph.repaint();
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
     }
 
     /**

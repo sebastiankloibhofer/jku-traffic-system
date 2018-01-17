@@ -1,4 +1,4 @@
-package participant;
+package trafficParticipants.participant;
 
 import java.util.Collection;
 import java.util.Iterator;

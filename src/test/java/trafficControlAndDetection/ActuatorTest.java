@@ -1,14 +1,13 @@
 package trafficControlAndDetection;
 
-import org.junit.Before;
-import org.junit.Test;
-
 import controlsystem.model.Node;
+import org.junit.Before;
+import org.junit.jupiter.api.Test;
 
 public class ActuatorTest {
 	private TrafficLight light;
 	private TrafficSign sign;
-	
+
 	@Before
 	public void setUp() throws Exception {
 		light = new TrafficLight("testlight", new Node(1, 1, 1), "Main Street");
@@ -23,7 +22,7 @@ public class ActuatorTest {
 		light.tryErrorRoutine();
 		assert(light.getState() == TrafficLight.TrafficLightState.YELLOW_BLINK);
 	}
-	
+
 	@Test
 	public void testTrafficSign() {
 		assert(sign.getState() == TrafficSign.TrafficSignState.NONE);
@@ -32,4 +31,5 @@ public class ActuatorTest {
 		sign.tryErrorRoutine();
 		assert(sign.getState() == TrafficSign.TrafficSignState.ATTENTION);
 	}
+
 }

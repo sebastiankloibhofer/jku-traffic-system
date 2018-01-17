@@ -22,16 +22,16 @@ public class StreetNetwork {
     }
 
     private void initCrossings() {
-        crossings[0] = new Crossing(1, new Vec2i(0, 0));
-        crossings[1] = new Crossing(2, new Vec2i(0, 10));
-        crossings[2] = new Crossing(3, new Vec2i(10, 10));
-        crossings[3] = new Crossing(4, new Vec2i(10, 0));
-        crossings[4] = new Crossing(5, new Vec2i(0, -10));
-        crossings[5] = new Crossing(6, new Vec2i(-10, -10));
-        crossings[6] = new Crossing(7, new Vec2i(-10, 0));
-        crossings[7] = new Crossing(8, new Vec2i(-10, 10));
-        crossings[8] = new Crossing(9, new Vec2i(10, -10));
-        crossings[9] = new Crossing(10, new Vec2i(30, 0));
+        crossings[0] = new Crossing(new Vec2i(0, 0));
+        crossings[1] = new Crossing(new Vec2i(0, 10));
+        crossings[2] = new Crossing(new Vec2i(10, 10));
+        crossings[3] = new Crossing(new Vec2i(10, 0));
+        crossings[4] = new Crossing(new Vec2i(0, -10));
+        crossings[5] = new Crossing(new Vec2i(-10, -10));
+        crossings[6] = new Crossing(new Vec2i(-10, 0));
+        crossings[7] = new Crossing(new Vec2i(-10, 10));
+        crossings[8] = new Crossing(new Vec2i(10, -10));
+        crossings[9] = new Crossing(new Vec2i(30, 0));
     }
 
     private void initLanes() {

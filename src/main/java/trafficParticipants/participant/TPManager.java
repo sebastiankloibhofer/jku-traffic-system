@@ -1,19 +1,20 @@
-package participant;
+package trafficParticipants.participant;
+
+import trafficParticipants.street.Lane;
+import trafficParticipants.util.Updateable;
 
 import java.util.ArrayDeque;
 import java.util.Map;
 import java.util.Queue;
-import street.Lane;
-import util.Updateable;
 
 /**
  * Updates all the traffic participants contained within the lanes,
  * keeps track of accidents and sends emergency cars if needed.
- * 
+ *
  * @author Christoph Kroell
  */
 public class TPManager {
-    
+
     private final Map<Integer, Lane> lanes;
     private final Queue<Lane> accidents;
 
@@ -21,7 +22,7 @@ public class TPManager {
         this.lanes = lanes;
         this.accidents = new ArrayDeque<>();
     }
-    
+
     public void update() {
         for(Lane lane : lanes.values()) {
             lane.getTrafficParticipants().update();
@@ -47,11 +48,11 @@ public class TPManager {
             }
         }
     }
-    
+
     /**
      * Puts the id of a lane where and accident occurened into a queue, which
      * is proccessed every update.
-     * 
+     *
      * @param lane The lane where the accident has occured.
      */
     public void sendEmergencyCarTo(Lane lane) {

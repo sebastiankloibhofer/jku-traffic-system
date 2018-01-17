@@ -1,17 +1,18 @@
-package participant;
+package trafficParticipants.participant;
+
+import trafficParticipants.street.Lane;
 
 import java.util.EnumSet;
 import java.util.Queue;
-import street.Lane;
 
 /**
- * 
+ *
  * @author Christoph Kroell
  */
 public class Vehicle implements TrafficParticipant {
 
     private static long idCount = 0;
-    
+
     private final long id;
     private final int speed;
     private Queue<Lane> path;
@@ -21,14 +22,14 @@ public class Vehicle implements TrafficParticipant {
     public Vehicle(int speed, Lane start, Lane goal) {
         this(speed, EnumSet.noneOf(InactiveVehicleTypes.class), start, goal);
     }
-    
+
     public Vehicle(int speed, EnumSet<InactiveVehicleTypes> inactiveTypes, Lane start, Lane goal) {
         id = idCount++;
         this.speed = speed;
         this.path = TPPath.get(start, goal);
         this.inactiveTypes = inactiveTypes;
     }
-    
+
     @Override
     public TPAction getAction() {
         if(getNextLane() == null) {
@@ -36,7 +37,7 @@ public class Vehicle implements TrafficParticipant {
         }
         return TPAction.MOVE;
     }
-    
+
     @Override
     public Lane getNextLane() {
         if(cur == null) {
@@ -90,7 +91,7 @@ public class Vehicle implements TrafficParticipant {
     public String toString() {
         return "Vehicle{" + "id=" + id + ", speed=" + speed + '}';
     }
-    
+
     public Lane getGoal() {
         if(path.isEmpty()) {
             return null;
@@ -99,7 +100,7 @@ public class Vehicle implements TrafficParticipant {
             return temp[temp.length - 1];
         }
     }
-    
+
     public EnumSet<InactiveVehicleTypes> getInactiveTypes() {
         return inactiveTypes;
     }

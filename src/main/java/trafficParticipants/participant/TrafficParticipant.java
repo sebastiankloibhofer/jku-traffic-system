@@ -1,6 +1,6 @@
-package participant;
+package trafficParticipants.participant;
 
-import street.Lane;
+import trafficParticipants.street.Lane;
 
 public interface TrafficParticipant {
     public int getSpeed();
