@@ -23,6 +23,8 @@ public class RoutePlannerTest {
 
     Set<Node> crossings;
     Set<Edge> lanes;
+    ConcurrentMap<Integer, Edge> l;
+    ConcurrentMap<Integer, Node> c;
 
     public RoutePlannerTest() {
         setup();
@@ -69,17 +71,18 @@ public class RoutePlannerTest {
         lanes.add(l9);
         lanes.add(l10);
         lanes.add(l11);
+
+        l = lanes.stream()
+                .collect(Collectors.toConcurrentMap(Edge::getId, Function.identity()));
+
+        c = crossings.stream()
+                .collect(Collectors.toConcurrentMap(Node::getId, Function.identity()));
     }
 
     @Test
     public void testRoute1() throws Exception {
 
 
-        ConcurrentMap<Integer, Edge> l = lanes.stream()
-                .collect(Collectors.toConcurrentMap(Edge::getId, Function.identity()));
-
-        ConcurrentMap<Integer, Node> c = crossings.stream()
-                .collect(Collectors.toConcurrentMap(Node::getId, Function.identity()));
         RoutePlanner planner = new RoutePlanner(c, l, c.get(2), c.get(4));
         try {
             Route r = planner.call();
@@ -94,18 +97,16 @@ public class RoutePlannerTest {
     public void testRoute2() throws Exception {
 
 
-        ConcurrentMap<Integer, Edge> l = lanes.stream()
-                .collect(Collectors.toConcurrentMap(Edge::getId, Function.identity()));
 
-        ConcurrentMap<Integer, Node> c = crossings.stream()
-                .collect(Collectors.toConcurrentMap(Node::getId, Function.identity()));
         RoutePlanner planner = new RoutePlanner(c, l, c.get(3), c.get(4));
         try {
             Route r = planner.call();
+
             assertEquals("Route from Crossing{position=Vec2i{x=800, y=120}} to Crossing{position=Vec2i{x=400, y=300}}:\n" +
-                    "Lane{5}\n" +
-                    "Lane{2}", r.toString());
-            //System.out.println(r);
+                    "Lane{23}\n" +
+                    "Lane{15}", r.toString());
+
+            System.out.println(r);
         } catch (Exception e) {
             e.printStackTrace();
         }
