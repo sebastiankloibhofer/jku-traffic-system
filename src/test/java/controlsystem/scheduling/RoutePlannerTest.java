@@ -3,14 +3,9 @@ package controlsystem.scheduling;
 import controlsystem.model.Edge;
 import controlsystem.model.Node;
 import controlsystem.model.Route;
-import controlsystem.persistence.domain.CrossingDTO;
-import org.junit.Test;
-import trafficParticipants.street.Crossing;
-import trafficParticipants.street.Lane;
-import trafficParticipants.tptests.StreetNetwork;
 
-import java.util.ArrayList;
-import java.util.Collections;
+import org.junit.Test;
+
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
