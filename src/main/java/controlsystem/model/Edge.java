@@ -1,26 +1,19 @@
 package controlsystem.model;
 
 
-import trafficParticipants.street.Crossing;
+import controlsystem.persistence.domain.LaneDTO;
 import trafficParticipants.street.Lane;
 
-import javax.persistence.*;
+import javax.persistence.Transient;
 import java.awt.*;
-import java.time.Instant;
 
 import static controlsystem.model.Node.AVG_CAR_LENGTH;
-import static java.time.Instant.now;
-import static javax.persistence.FetchType.EAGER;
-import static javax.persistence.GenerationType.IDENTITY;
 
 /**
  * Wrapper for a {@link Lane}.
  * This class extends the basic lane model and includes properties that
  * are only relevant to this subsystem.
- * It furthermore contains the mapping directives for the persistence framework.
  */
-@Entity
-@Table(name = "lanes")
 public class Edge extends Lane implements GraphPart {
     /**
      * Approximation of the coordinate system to the real world.
@@ -38,7 +31,9 @@ public class Edge extends Lane implements GraphPart {
     public static final int B_OFFSET = 100;
     public static final int A_OFFSET = 255;
 
-    /** Indicates whether this lane is blocked. */
+    /**
+     * Indicates whether this lane is blocked.
+     */
     private boolean blocked;
 
     /**
@@ -48,9 +43,6 @@ public class Edge extends Lane implements GraphPart {
 
     private int nParticipants;
 
-    private Instant created;
-    private Instant modified;
-
     /**
      * No-args constructor for Hibernate
      */
@@ -58,11 +50,25 @@ public class Edge extends Lane implements GraphPart {
         super();
     }
 
+    /**
+     * Copy constructor for DB objects.
+     *
+     * @param lane The lane from the database
+     */
+    public Edge(LaneDTO lane) {
+        setId(lane.getNr());
+        setStart(new Node(lane.getStart()));
+        setEnd(new Node(lane.getEnd()));
+        setNParticipants(lane.getParticipantCount());
+        setBlocked(lane.isBlocked());
+        setMinSpeed(lane.getMinSpeed());
+        setMaxSpeed(lane.getMaxSpeed());
+        setMetres(lane.getLength());
+    }
+
     public Edge(Node start, Node end, double metres) {
         super(start, end);
         this.metres = metres;
-        this.created = now();
-        this.modified = now();
     }
 
     public Edge(Node start, Node end) {
@@ -128,68 +134,6 @@ public class Edge extends Lane implements GraphPart {
         return new Color(r, g, b, a);
     }
 
-
-
-    @Override
-    @Id
-    @Column(name = "id", unique = true, nullable = false)
-    @GeneratedValue(strategy = IDENTITY)
-    public int getId() {
-        return super.getId();
-    }
-
-    @Override
-    @ManyToOne(fetch = EAGER)
-    @JoinColumn(name = "start_id", nullable = false)
-    public Node getStart() {
-        return (Node) super.getStart();
-    }
-
-    @Override
-    protected void setId(int id) {
-        super.setId(id);
-    }
-
-    @Override
-    protected void setStart(Crossing start) {
-        super.setStart(start);
-    }
-
-    @Override
-    protected void setEnd(Crossing end) {
-        super.setEnd(end);
-    }
-
-    @Override
-    @ManyToOne(fetch = EAGER)
-    @JoinColumn(name = "end_id", nullable = false)
-    public Node getEnd() {
-        return (Node) super.getEnd();
-    }
-
-    @Override
-    @Column(name = "min_speed")
-    public int getMinSpeed() {
-        return super.getMinSpeed();
-    }
-
-    @Override
-    public void setMinSpeed(int minSpeed) {
-        super.setMinSpeed(minSpeed);
-    }
-
-    @Override
-    @Column(name = "max_speed")
-    public int getMaxSpeed() {
-        return super.getMaxSpeed();
-    }
-
-    @Override
-    public void setMaxSpeed(int maxSpeed) {
-        super.setMaxSpeed(maxSpeed);
-    }
-
-    @Column(name = "blocked", nullable = false)
     public boolean isBlocked() {
         return blocked;
     }
@@ -198,39 +142,19 @@ public class Edge extends Lane implements GraphPart {
         this.blocked = blocked;
     }
 
-    @Column(name = "length", nullable = false)
-    private void setMetres(double metres) {
-        this.metres = metres;
-    }
-
     public double getMetres() {
         return metres;
     }
 
-    @Column(name = "participant_count", nullable = false)
+    public void setMetres(double metres) {
+        this.metres = metres;
+    }
+
     public int getNParticipants() {
         return nParticipants;
     }
 
     public void setNParticipants(int nParticipants) {
         this.nParticipants = nParticipants;
-    }
-
-    @Column(name = "created_at", nullable = false)
-    public Instant getCreated() {
-        return created;
-    }
-
-    private void setCreated(Instant created) {
-        this.created = created;
-    }
-
-    @Column(name = "modified_at", nullable = false)
-    public Instant getModified() {
-        return modified;
-    }
-
-    private void setModified(Instant modified) {
-        this.modified = modified;
     }
 }

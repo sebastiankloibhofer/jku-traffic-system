@@ -3,7 +3,6 @@ package controlsystem.persistence;
 import controlsystem.model.Edge;
 import controlsystem.model.Node;
 import controlsystem.model.Route;
-import trafficParticipants.street.Lane;
 
 import java.time.Instant;
 import java.util.Collection;
@@ -11,7 +10,7 @@ import java.util.List;
 
 public interface Repository {
 
-    int calcAvgCapacity(Lane lane, Instant from, Instant to);
+    int calcAvgCapacity(Edge lane, Instant from, Instant to);
 
     List<Route> getDeterminedPaths(Node src, Node dst, Instant from, Instant to);
 

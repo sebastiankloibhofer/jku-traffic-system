@@ -41,7 +41,7 @@ public class Crossing {
         this.in = new ArrayList<>();
     }
 
-    private void setId(int id) {
+    protected void setId(int id) {
         this.id = id;
     }
 

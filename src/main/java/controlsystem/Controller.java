@@ -220,7 +220,7 @@ public class Controller implements RoutingControl, ControlSystem {
                 .collect(Collectors.toConcurrentMap(Node::getId, Function.identity()));
 
         Controller con  = new Controller(c, l, null);
-//        con.init();
+        con.init();
 
         Repository rep = RepositoryFactory.getArchiveRepository();
 
@@ -229,16 +229,16 @@ public class Controller implements RoutingControl, ControlSystem {
 
         System.out.println("AVG: " + rep.calcAvgCapacity(l0, Instant.now().minus(5, ChronoUnit.DAYS), Instant.now()));
 
-//        try {
-//            Thread.sleep(5000);
-//            Edge lane = con.lanes.get(1);
-//
-//            System.out.println("Blocking lane " + lane);
-//            lane.setBlocked(true);
-//            con.graph.repaint();
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
+        try {
+            Thread.sleep(5000);
+            Edge lane = con.lanes.get(1);
+
+            System.out.println("Blocking lane " + lane);
+            lane.setBlocked(true);
+            con.graph.repaint();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     /**

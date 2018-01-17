@@ -1,21 +1,18 @@
 package controlsystem.model;
 
 
+import controlsystem.persistence.domain.CrossingDTO;
 import trafficParticipants.street.Crossing;
 
-import javax.persistence.*;
 import java.awt.*;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
-import static javax.persistence.GenerationType.IDENTITY;
 
 /**
  * Extension of the {@link Crossing} base class.
- * Includes properties to visualize the nodes and mapping annotations.
+ * Includes properties to visualize the nodes.
  */
-@Entity
-@Table(name = "crossings")
 public class Node extends Crossing implements GraphPart {
 
     /**
@@ -35,6 +32,15 @@ public class Node extends Crossing implements GraphPart {
 
     protected Node() {
         super();
+    }
+
+    /**
+     * Copy constructor for DB objects.
+     *
+     * @param crossing The crossing from the database.
+     */
+    public Node(CrossingDTO crossing) {
+        setId(crossing.getId());
     }
 
     public Node(int id, int x, int y) {
@@ -64,14 +70,6 @@ public class Node extends Crossing implements GraphPart {
 
     private double sizeFactor() {
         return min(1, nLanes() / MAX_LANE_EST);
-    }
-
-    @Override
-    @Id
-    @Column(name = "id")
-    @GeneratedValue(strategy = IDENTITY)
-    public int getId() {
-        return super.getId();
     }
 
     public int x() {

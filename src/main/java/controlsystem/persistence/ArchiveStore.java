@@ -3,9 +3,11 @@ package controlsystem.persistence;
 import controlsystem.model.Edge;
 import controlsystem.model.Node;
 import controlsystem.model.Route;
+import controlsystem.persistence.domain.CrossingDTO;
+import controlsystem.persistence.domain.LaneDTO;
+import controlsystem.persistence.domain.RouteDTO;
 import controlsystem.util.ThrowingConsumer;
 import controlsystem.util.ThrowingFunction;
-import trafficParticipants.street.Lane;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -80,7 +82,9 @@ public class ArchiveStore implements Repository {
 
 
     @Override
-    public int calcAvgCapacity(Lane lane, Instant from, Instant to) {
+    public int calcAvgCapacity(Edge lane, Instant from, Instant to) {
+        LaneDTO l = new LaneDTO(lane);
+
         try {
             return exec(em -> {
                 Query q;
@@ -88,28 +92,33 @@ public class ArchiveStore implements Repository {
                 if (from == null && to == null) {
                     q = em.createNativeQuery(
                             "SELECT avg(participant_count) " +
-                            "FROM lanes");
+                            "FROM lanes " +
+                            "WHERE nr = :nr");
                 } else if (from == null) {
                     q = em.createNativeQuery(
                             "SELECT avg(participant_count) " +
                             "FROM lanes " +
-                            "WHERE created_at <= :to")
+                            "WHERE nr = :nr" +
+                            "  AND created_at <= :to")
                             .setParameter("to", to);
                 } else if (to == null) {
                     q = em.createNativeQuery(
                             "SELECT avg(participant_count) " +
                             "FROM lanes " +
-                            "WHERE created_at >= :from")
+                            "WHERE nr = :nr" +
+                            "  AND created_at >= :from")
                             .setParameter("from", from);
                 } else {
                     q = em.createNativeQuery(
                             "SELECT avg(participant_count) " +
                             "FROM lanes " +
-                            "WHERE created_at BETWEEN :from AND :to")
+                            "WHERE nr = :nr" +
+                            "  AND created_at BETWEEN :from AND :to")
                             .setParameter("from", from)
                             .setParameter("to", to);
                 }
 
+                q.setParameter("nr", l.getNr());
                 return ((BigInteger) q.getSingleResult()).intValue();
             });
         } catch (Exception e) {
@@ -121,6 +130,10 @@ public class ArchiveStore implements Repository {
     @SuppressWarnings("unchecked")
     @Override
     public List<Route> getDeterminedPaths(Node src, Node dst, Instant from, Instant to) {
+        CrossingDTO c1 = new CrossingDTO(src);
+        CrossingDTO c2 = new CrossingDTO(dst);
+
+
         try {
             return exec(em -> {
                 Query q;
@@ -162,8 +175,8 @@ public class ArchiveStore implements Repository {
                             .setParameter("to", to);
                 }
 
-                q.setParameter("start_id", src.getId());
-                q.setParameter("end_id", dst.getId());
+                q.setParameter("start_id", c1.getId());
+                q.setParameter("end_id", c2.getId());
 
                 return q.getResultList();
             });
@@ -177,7 +190,7 @@ public class ArchiveStore implements Repository {
     public void save(Node node) {
         try {
             exec(em -> {
-                em.persist(node);
+                em.persist(new CrossingDTO(node));
             });
         } catch (Exception e) {
             e.printStackTrace();
@@ -193,7 +206,7 @@ public class ArchiveStore implements Repository {
     public void save(Route route) {
         try {
             exec(em -> {
-                em.persist(route);
+                em.persist(new RouteDTO(route));
             });
         } catch (Exception e) {
             e.printStackTrace();
@@ -204,7 +217,7 @@ public class ArchiveStore implements Repository {
     public void save(Edge edge) {
         try {
             exec(em -> {
-                em.persist(edge);
+                em.persist(new LaneDTO(edge));
             });
         } catch (Exception e) {
             e.printStackTrace();
