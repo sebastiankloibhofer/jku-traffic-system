@@ -88,7 +88,7 @@ public class RoutePlannerTest {
             Route r = planner.call();
             assertEquals("Route from Crossing{position=Vec2i{x=530, y=200}} to Crossing{position=Vec2i{x=400, y=300}}:\n" +
                     "Lane{3}", r.toString());
-            //System.out.println(r);
+            System.out.println(r);
         } catch (Exception e) {
             e.printStackTrace();
         }
